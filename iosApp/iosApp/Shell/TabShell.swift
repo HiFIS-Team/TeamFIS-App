@@ -41,6 +41,8 @@ struct TabShell: View {
                 }
             }
         }
+        // 탭 바 위 유리 줄 — 다음 수업. 값은 아직 자리 표시자다 (데이터가 붙으면 갈아끼운다)
+        .bottomAccessory(NextClassBar(member: "000", time: "오후 2:00"))
     }
 
     private var legacyTabs: some View {
