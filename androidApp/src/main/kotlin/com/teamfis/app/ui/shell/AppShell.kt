@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.teamfis.app.ui.screens.HomeScreen
 
 /**
  * 앱 셸 — 헤더 + 화면 + 하단 탭 바.
@@ -35,11 +36,15 @@ fun AppShell() {
         ) {
             AppHeader()
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(text = selected.label)
+            when (selected) {
+                BottomTab.Home -> HomeScreen()
+                // 나머지 탭은 아직 자리 표시자다
+                else -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(text = selected.label)
+                }
             }
         }
     }

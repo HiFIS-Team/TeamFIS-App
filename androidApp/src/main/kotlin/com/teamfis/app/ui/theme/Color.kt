@@ -8,6 +8,14 @@ object TeamFisColor {
     val Brand = Color(0xFFFC0B21)
 
     val Background = Color.Black
+    val Surface2 = Color(0xFF292A2F)
+
     val TextPrimary = Color.White
+    val TextSecondary = Color(0xFFBCC1CB)
+    val TextTertiary = Color(0xFF9BA2AF)
     val TextMuted = Color(0x73FFFFFF) // 흰색 45%
+
+    /** 토요일 파랑 · 일요일 빨강 — 한국 달력 관행 */
+    val WeekendSaturday = Color(0xFF7DA8FF)
+    val WeekendSunday = Color(0xFFFF6B6B)
 }

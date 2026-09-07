@@ -1,0 +1,28 @@
+package com.teamfis.app.ui.theme
+
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
+
+/** 간격 — 4pt 베이스 */
+object TeamFisSpacing {
+    val xs = 4.dp
+    val sm = 8.dp
+    val md = 12.dp
+    val lg = 16.dp
+    val xl = 20.dp
+
+    /** 화면 좌우 여백 */
+    val screenHorizontal = 20.dp
+}
+
+object TeamFisRadius {
+    val full = RoundedCornerShape(percent = 50)
+}
+
+object TeamFisSize {
+    val header = 56.dp
+    val minTouchTarget = 44.dp
+
+    /** 알약 칩 높이 — 펼쳐보기 같은 것 */
+    val chip = 36.dp
+}

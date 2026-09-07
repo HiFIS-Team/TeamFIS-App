@@ -13,13 +13,17 @@ struct TabScreen: View {
             // 유리 바가 콘텐츠 위에 떠 있으므로 배경은 아래까지 깐다
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                AppHeader()
+            if tab == .home {
+                HomeScreen()
+            } else {
+                VStack(spacing: 0) {
+                    AppHeader()
 
-                Spacer()
-                Text(tab == .home ? Greeting().greet() : tab.label)
-                    .foregroundStyle(.white)
-                Spacer()
+                    Spacer()
+                    Text(tab.label)
+                        .foregroundStyle(.white)
+                    Spacer()
+                }
             }
         }
     }
