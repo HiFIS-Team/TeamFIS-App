@@ -8,15 +8,18 @@ struct HomeScreen: View {
     @State private var expanded = false
 
     var body: some View {
+        // **헤더만 고정이고 달력부터 아래는 전부 스크롤한다** (MyFIS 홈과 같은 구조)
         VStack(spacing: 0) {
             AppHeader()
 
             ScrollView {
                 VStack(spacing: 0) {
                     HomeCalendar(selected: $selected, month: $month, expanded: expanded)
+                        .padding(.top, TeamFisSpacing.sm)
                     CalendarBar(expanded: expanded) {
                         withAnimation(TeamFisMotion.slow) { expanded.toggle() }
                     }
+                    .padding(.top, TeamFisSpacing.xs)
 
                     ActionTiles()
                         .padding(.horizontal, TeamFisSpacing.screenHorizontal)
@@ -24,6 +27,7 @@ struct HomeScreen: View {
 
                     todayClasses
                 }
+                .padding(.bottom, TeamFisSpacing.xxxl)
             }
         }
         .onChange(of: selected) { _, new in month = new }
@@ -32,9 +36,22 @@ struct HomeScreen: View {
     /// 오늘 수업 — **시간 순**으로 앞의 세 건만 보여준다.
     private var todayClasses: some View {
         VStack(alignment: .leading, spacing: TeamFisSpacing.md) {
-            Text("오늘 수업")
-                .font(TeamFisFont.titleMd)
-                .foregroundStyle(TeamFisColor.textPrimary)
+            HStack(alignment: .firstTextBaseline, spacing: TeamFisSpacing.md) {
+                Text("오늘 수업")
+                    .font(TeamFisFont.titleMd)
+                    .foregroundStyle(TeamFisColor.textPrimary)
+
+                Spacer(minLength: 0)
+
+                Button {
+                    // 전체 목록 화면이 생기면 연결한다
+                } label: {
+                    Text("전체보기")
+                        .font(TeamFisFont.bodySm)
+                        .foregroundStyle(TeamFisColor.textSecondary)
+                }
+                .buttonStyle(.plain)
+            }
 
             ForEach(Self.placeholderClasses) { item in
                 TodayClassCard(item: item)

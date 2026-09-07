@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -48,10 +49,12 @@ fun HomeScreen() {
     var month by remember { mutableStateOf(LocalDate.now()) }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
+    // **헤더(셸)만 고정이고 달력부터 아래는 전부 스크롤한다** (MyFIS 홈과 같은 구조)
     Column(
         Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = TeamFisSpacing.xxxl),
     ) {
         HomeCalendar(
             selected = selected,
@@ -62,20 +65,24 @@ fun HomeScreen() {
                 month = it
             },
             onMonthChange = { month = it },
+            modifier = Modifier.padding(top = TeamFisSpacing.sm),
         )
-        CalendarBar(expanded = expanded, onToggle = { expanded = !expanded })
+        CalendarBar(
+            expanded = expanded,
+            onToggle = { expanded = !expanded },
+            modifier = Modifier.padding(top = TeamFisSpacing.xs),
+        )
 
         Spacer(Modifier.height(TeamFisSpacing.md))
         // 값은 아직 자리 표시자다 (데이터가 붙으면 갈아끼운다)
         NextClassBanner(member = "000", time = "오후 2:00")
 
         ActionTiles(
-            modifier = Modifier
-                .padding(
-                    top = TeamFisSpacing.lg,
-                    start = TeamFisSpacing.screenHorizontal,
-                    end = TeamFisSpacing.screenHorizontal,
-                ),
+            modifier = Modifier.padding(
+                top = TeamFisSpacing.lg,
+                start = TeamFisSpacing.screenHorizontal,
+                end = TeamFisSpacing.screenHorizontal,
+            ),
         )
 
         TodayClasses()
@@ -91,12 +98,33 @@ private fun TodayClasses() {
             .padding(top = TeamFisSpacing.lg, bottom = TeamFisSpacing.xl),
         verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
     ) {
-        Text(
-            "오늘 수업",
-            style = TeamFisType.titleMd,
-            color = TeamFisColor.TextPrimary,
-            modifier = Modifier.padding(horizontal = TeamFisSpacing.screenHorizontal),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = TeamFisSpacing.screenHorizontal),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                "오늘 수업",
+                style = TeamFisType.titleMd,
+                color = TeamFisColor.TextPrimary,
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            val allInteraction = remember { MutableInteractionSource() }
+            Text(
+                "전체보기",
+                style = TeamFisType.bodySm,
+                color = TeamFisColor.TextSecondary,
+                modifier = Modifier.clickable(
+                    interactionSource = allInteraction,
+                    indication = null,
+                    // 전체 목록 화면이 생기면 연결한다
+                    onClick = {},
+                ),
+            )
+        }
         placeholderClasses.forEach { item ->
             TodayClassCard(
                 item = item,

@@ -11,6 +11,7 @@ object TeamFisSpacing {
     val lg = 16.dp
     val xl = 20.dp
     val xxl = 24.dp
+    val xxxl = 32.dp
 
     /** 화면 좌우 여백 */
     val screenHorizontal = 20.dp

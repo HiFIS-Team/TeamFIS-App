@@ -8,6 +8,7 @@ enum TeamFisSpacing {
     static let lg: CGFloat = 16
     static let xl: CGFloat = 20
     static let xxl: CGFloat = 24
+    static let xxxl: CGFloat = 32
 
     /// 화면 좌우 여백
     static let screenHorizontal: CGFloat = 20
