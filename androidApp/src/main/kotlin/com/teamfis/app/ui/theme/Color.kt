@@ -8,6 +8,8 @@ object TeamFisColor {
     val Brand = Color(0xFFFC0B21)
 
     val Background = Color.Black
+    /** 카드 판 — 검정 위에 한 겹 뜬 면 */
+    val Surface1 = Color(0xFF16171B)
     val Surface2 = Color(0xFF292A2F)
 
     val TextPrimary = Color.White

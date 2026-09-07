@@ -6,6 +6,8 @@ enum TeamFisColor {
     static let brand = Color(red: 252 / 255, green: 11 / 255, blue: 33 / 255)
 
     static let background = Color.black
+    /// 카드 판 — 검정 위에 한 겹 뜬 면
+    static let surface1 = Color(red: 22 / 255, green: 23 / 255, blue: 27 / 255)
     static let surface2 = Color(red: 41 / 255, green: 42 / 255, blue: 47 / 255)
 
     static let textPrimary = Color.white

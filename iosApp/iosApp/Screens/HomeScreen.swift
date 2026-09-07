@@ -11,15 +11,44 @@ struct HomeScreen: View {
         VStack(spacing: 0) {
             AppHeader()
 
-            HomeCalendar(selected: $selected, month: $month, expanded: expanded)
-            CalendarBar(expanded: expanded) {
-                withAnimation(TeamFisMotion.slow) { expanded.toggle() }
-            }
+            ScrollView {
+                VStack(spacing: 0) {
+                    HomeCalendar(selected: $selected, month: $month, expanded: expanded)
+                    CalendarBar(expanded: expanded) {
+                        withAnimation(TeamFisMotion.slow) { expanded.toggle() }
+                    }
 
-            Spacer()
+                    todayClasses
+                }
+            }
         }
         .onChange(of: selected) { _, new in month = new }
     }
+
+    /// 오늘 수업 — **시간 순**으로 앞의 세 건만 보여준다.
+    private var todayClasses: some View {
+        VStack(alignment: .leading, spacing: TeamFisSpacing.md) {
+            Text("오늘 수업")
+                .font(TeamFisFont.titleMd)
+                .foregroundStyle(TeamFisColor.textPrimary)
+
+            ForEach(Self.placeholderClasses) { item in
+                TodayClassCard(item: item)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+        .padding(.top, TeamFisSpacing.lg)
+        .padding(.bottom, TeamFisSpacing.xl)
+    }
+
+    /// 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 오늘 수업을 주면 통째로 걷어낸다.
+    /// 시간 순으로 이미 정렬돼 있다.
+    private static let placeholderClasses = [
+        TodayClass(member: "000", time: "오후 2:00", detail: "PT 12/30회차"),
+        TodayClass(member: "000", time: "오후 4:00", detail: "PT 3/20회차"),
+        TodayClass(member: "000", time: "오후 6:30", detail: "PT 8/10회차"),
+    ]
 }
 
 /// 캘린더 아래 한 줄 — `펼쳐보기`.

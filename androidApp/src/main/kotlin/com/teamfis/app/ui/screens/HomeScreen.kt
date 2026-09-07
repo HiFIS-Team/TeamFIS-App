@@ -6,9 +6,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,6 +29,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
 import com.teamfis.app.ui.components.HomeCalendar
+import com.teamfis.app.ui.components.TodayClass
+import com.teamfis.app.ui.components.TodayClassCard
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisMotion
 import com.teamfis.app.ui.theme.TeamFisRadius
@@ -41,7 +46,11 @@ fun HomeScreen() {
     var month by remember { mutableStateOf(LocalDate.now()) }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    Column(Modifier.fillMaxWidth()) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
+    ) {
         HomeCalendar(
             selected = selected,
             month = month,
@@ -53,8 +62,44 @@ fun HomeScreen() {
             onMonthChange = { month = it },
         )
         CalendarBar(expanded = expanded, onToggle = { expanded = !expanded })
+
+        TodayClasses()
     }
 }
+
+/** 오늘 수업 — **시간 순**으로 앞의 세 건만 보여준다. */
+@Composable
+private fun TodayClasses() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = TeamFisSpacing.lg, bottom = TeamFisSpacing.xl),
+        verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
+    ) {
+        Text(
+            "오늘 수업",
+            style = TeamFisType.titleMd,
+            color = TeamFisColor.TextPrimary,
+            modifier = Modifier.padding(horizontal = TeamFisSpacing.screenHorizontal),
+        )
+        placeholderClasses.forEach { item ->
+            TodayClassCard(
+                item = item,
+                modifier = Modifier.padding(horizontal = TeamFisSpacing.screenHorizontal),
+            )
+        }
+    }
+}
+
+/**
+ * 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 오늘 수업을 주면 통째로 걷어낸다.
+ * 시간 순으로 이미 정렬돼 있다.
+ */
+private val placeholderClasses = listOf(
+    TodayClass(member = "000", time = "오후 2:00", detail = "PT 12/30회차"),
+    TodayClass(member = "000", time = "오후 4:00", detail = "PT 3/20회차"),
+    TodayClass(member = "000", time = "오후 6:30", detail = "PT 8/10회차"),
+)
 
 /**
  * 캘린더 아래 한 줄 — `펼쳐보기`.

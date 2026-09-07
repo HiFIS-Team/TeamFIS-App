@@ -10,12 +10,14 @@ object TeamFisSpacing {
     val md = 12.dp
     val lg = 16.dp
     val xl = 20.dp
+    val xxl = 24.dp
 
     /** 화면 좌우 여백 */
     val screenHorizontal = 20.dp
 }
 
 object TeamFisRadius {
+    val card = RoundedCornerShape(4.dp)
     val full = RoundedCornerShape(percent = 50)
 }
 
