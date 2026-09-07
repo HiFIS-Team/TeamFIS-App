@@ -8,10 +8,19 @@ struct NextClassBar: View {
     let member: String
     let time: String
 
+    private let clockIcon: CGFloat = 18
+
     var body: some View {
-        HStack(spacing: TeamFisSpacing.md) {
+        HStack(spacing: TeamFisSpacing.sm) {
+            Image("ic_clock")
+                .renderingMode(.template)
+                .resizable()
+                .frame(width: clockIcon, height: clockIcon)
+                .foregroundStyle(TeamFisColor.textPrimary)
+
             Text("\(member) 회원님")
-                .font(TeamFisFont.bodySm)
+                // 오른쪽 시간과 **같은 크기**로 맞춘다 — 한 줄 안에서 둘이 짝이다
+                .font(TeamFisFont.titleSm)
                 .foregroundStyle(TeamFisColor.textPrimary)
                 .lineLimit(1)
 

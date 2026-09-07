@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
 import com.teamfis.app.ui.components.HomeCalendar
+import com.teamfis.app.ui.components.NextClassBanner
 import com.teamfis.app.ui.components.TodayClass
 import com.teamfis.app.ui.components.TodayClassCard
 import com.teamfis.app.ui.theme.TeamFisColor
@@ -62,6 +63,10 @@ fun HomeScreen() {
             onMonthChange = { month = it },
         )
         CalendarBar(expanded = expanded, onToggle = { expanded = !expanded })
+
+        Spacer(Modifier.height(TeamFisSpacing.md))
+        // 값은 아직 자리 표시자다 (데이터가 붙으면 갈아끼운다)
+        NextClassBanner(member = "000", time = "오후 2:00")
 
         TodayClasses()
     }

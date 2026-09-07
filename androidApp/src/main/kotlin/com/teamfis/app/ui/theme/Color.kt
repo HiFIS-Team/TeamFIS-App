@@ -7,6 +7,15 @@ object TeamFisColor {
     /** 브랜드 레드 — 로고 마크에서 잰 값 (`assets/brand/logo.png` 안쪽 평균) */
     val Brand = Color(0xFFFC0B21)
 
+    /**
+     * 큰 면·띠에 쓰는 브랜드 그라디언트 (왼쪽 → 오른쪽).
+     *
+     * 로고 마크 안에 **실제로 있는 두 극단**을 끝에 놓았다 — 가장 밝은 자리(`#FD4259`)와
+     * 가장 깊은 자리(`#FB0209`). 평균끼리 이으면 차이가 1% 라 단색으로 보인다.
+     */
+    val BrandGradientStart = Color(0xFFFD4259)
+    val BrandGradientEnd = Color(0xFFFB0209)
+
     val Background = Color.Black
     /** 카드 판 — 검정 위에 한 겹 뜬 면 */
     val Surface1 = Color(0xFF16171B)
