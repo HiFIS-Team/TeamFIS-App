@@ -18,6 +18,10 @@ struct HomeScreen: View {
                         withAnimation(TeamFisMotion.slow) { expanded.toggle() }
                     }
 
+                    ActionTiles()
+                        .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+                        .padding(.top, TeamFisSpacing.lg)
+
                     todayClasses
                 }
             }
