@@ -18,7 +18,11 @@ import com.teamfis.app.ui.screens.HomeScreen
 import com.teamfis.app.ui.screens.MemberScreen
 
 /**
- * 앱 셸 — 헤더 + 화면 + 하단 탭 바.
+ * 앱 셸 — 화면 + 하단 탭 바.
+ *
+ * **헤더는 셸이 아니라 화면이 들고 있다** (iOS 와 같은 방식). 회원 상세처럼
+ * 워드마크 대신 뒤로가기를 그려야 하는 화면이 있어서, 셸이 헤더를 고정하면
+ * 그 화면이 헤더를 걷어낼 방법이 없다.
  *
  * 아직 안 만든 탭은 이름만 띄우는 자리 표시자를 둔다.
  */
@@ -30,22 +34,24 @@ fun AppShell() {
         containerColor = Color.Black,
         bottomBar = { BottomTabBar(selected, onSelect = { selected = it }) },
     ) { inner ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(inner),
         ) {
-            AppHeader()
-
             when (selected) {
                 BottomTab.Home -> HomeScreen()
                 BottomTab.Member -> MemberScreen()
                 // 나머지 탭은 아직 자리 표시자다
-                else -> Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(text = selected.label)
+                else -> Column(Modifier.fillMaxSize()) {
+                    AppHeader()
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(text = selected.label)
+                    }
                 }
             }
         }

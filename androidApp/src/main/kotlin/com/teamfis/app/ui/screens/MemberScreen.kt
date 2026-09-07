@@ -21,6 +21,7 @@ import com.teamfis.app.ui.components.MemberDivider
 import com.teamfis.app.ui.components.MemberFilterBar
 import com.teamfis.app.ui.components.MemberRow
 import com.teamfis.app.ui.components.MemberStatus
+import com.teamfis.app.ui.shell.AppHeader
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisSpacing
 import com.teamfis.app.ui.theme.TeamFisType
@@ -31,10 +32,19 @@ import com.teamfis.app.ui.theme.TeamFisType
  * **보유 회원 전체가 기본**이고, 필터는 그 위에서 갈래를 좁힌다.
  * 목록이 수십 줄로 길어지므로 필터 줄은 **위에 고정**한다 — 같이 흘러가면
  * 아래에서 갈래를 바꾸려고 맨 위까지 되돌아가야 한다.
+ *
+ * 한 명을 누르면 [MemberDetailScreen] 이 **이 자리를 통째로 덮는다.** 상세는
+ * 워드마크 헤더 대신 뒤로가기를 그리므로 목록과 헤더를 같이 쓸 수 없다.
  */
 @Composable
 fun MemberScreen() {
     var filter by rememberSaveable { mutableStateOf<MemberStatus?>(null) }
+    var opened by remember { mutableStateOf<Member?>(null) }
+
+    opened?.let { member ->
+        MemberDetailScreen(member, onBack = { opened = null })
+        return
+    }
 
     val counts = remember { placeholderMembers.groupingBy { it.status }.eachCount() }
     val shown = remember(filter) {
@@ -42,6 +52,8 @@ fun MemberScreen() {
     }
 
     Column(Modifier.fillMaxSize()) {
+        AppHeader()
+
         MemberFilterBar(
             selected = filter,
             counts = counts,
@@ -61,8 +73,7 @@ fun MemberScreen() {
             LazyColumn(contentPadding = PaddingValues(bottom = TeamFisSpacing.xxxl)) {
                 itemsIndexed(shown) { index, member ->
                     if (index > 0) MemberDivider()
-                    // 회원 상세 화면이 생기면 연결한다
-                    MemberRow(member, onClick = {})
+                    MemberRow(member, onClick = { opened = member })
                 }
             }
         }

@@ -8,10 +8,25 @@ import SwiftUI
 ///
 /// ⚠️ 홈과 같은 `VStack { 고정; ScrollView }` 모양을 지킨다. `safeAreaInset` 이나
 /// `Group` 으로 감싸면 하단 유리 바가 **끝까지 내렸을 때 제멋대로 펴진다** (2026-09-07).
+///
+/// 한 명을 누르면 상세로 **밀어 넣는다**(`NavigationStack`) — 옆으로 쓸어 돌아오는
+/// 제스처가 공짜로 따라온다. 시스템 내비게이션 바는 끈다. 화면이 자기 머리를 그린다.
 struct MemberScreen: View {
     @State private var filter: MemberStatus?
+    @State private var path: [Member] = []
 
     var body: some View {
+        NavigationStack(path: $path) {
+            list
+                .toolbar(.hidden, for: .navigationBar)
+                .navigationDestination(for: Member.self) { member in
+                    MemberDetailScreen(member: member) { path.removeLast() }
+                        .toolbar(.hidden, for: .navigationBar)
+                }
+        }
+    }
+
+    private var list: some View {
         VStack(spacing: 0) {
             AppHeader()
 
@@ -36,8 +51,7 @@ struct MemberScreen: View {
                             if index > 0 {
                                 MemberDivider()
                             }
-                            // 회원 상세 화면이 생기면 연결한다
-                            MemberRow(member: member)
+                            MemberRow(member: member) { path.append(member) }
                         }
                     }
                     // 접힌 유리 바가 마지막 줄을 덮지 않게 (값의 근거는 토큰 주석에)

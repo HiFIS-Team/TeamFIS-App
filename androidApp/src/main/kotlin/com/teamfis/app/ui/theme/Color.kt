@@ -29,6 +29,14 @@ object TeamFisColor {
     /** 줄 구분선 — 면을 안 깔고 줄만 나눌 때 */
     val Divider = Color(0x1AFFFFFF) // 흰색 10%
 
+    /**
+     * 앞으로 일어날 일 — `수업예정` 배지.
+     *
+     * 브랜드 레드는 **지금 눌러야 할 것**(완료 버튼·만료 회원)이 가져간다.
+     * 예정은 누를 것이 아니라 알려 주는 것이라 색을 갈라야 한다.
+     */
+    val Scheduled = Color(0xFF2E9E5B)
+
     /** 토요일 파랑 · 일요일 빨강 — 한국 달력 관행 */
     val WeekendSaturday = Color(0xFF7DA8FF)
     val WeekendSunday = Color(0xFFFF6B6B)

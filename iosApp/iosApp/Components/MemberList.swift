@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// 회원 상태 — 회원 목록을 가르는 세 갈래.
-enum MemberStatus: CaseIterable {
+enum MemberStatus: CaseIterable, Hashable {
     case active, holding, expired
 
     var label: String {
@@ -14,7 +14,7 @@ enum MemberStatus: CaseIterable {
 }
 
 /// 회원 한 명. 데이터가 붙기 전까지는 화면에서 만들어 넣는다.
-struct Member: Identifiable {
+struct Member: Identifiable, Hashable {
     let id = UUID()
     let name: String
     let status: MemberStatus

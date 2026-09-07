@@ -41,6 +41,7 @@ import com.teamfis.app.ui.components.PendingLogList
 import com.teamfis.app.ui.components.SectionHeader
 import com.teamfis.app.ui.components.TodayClass
 import com.teamfis.app.ui.components.TodayClassCard
+import com.teamfis.app.ui.shell.AppHeader
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisMotion
 import com.teamfis.app.ui.theme.TeamFisRadius
@@ -64,72 +65,77 @@ fun HomeScreen() {
     var month by remember { mutableStateOf(LocalDate.now()) }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    // **헤더(셸)만 고정이고 달력부터 아래는 전부 스크롤한다** (MyFIS 홈과 같은 구조)
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = TeamFisSpacing.xxxl),
-    ) {
-        HomeCalendar(
-            selected = selected,
-            month = month,
-            expanded = expanded,
-            onSelect = {
-                selected = it
-                month = it
-            },
-            onMonthChange = { month = it },
-            modifier = Modifier.padding(top = TeamFisSpacing.sm),
-        )
-        CalendarBar(
-            expanded = expanded,
-            onToggle = { expanded = !expanded },
-            modifier = Modifier.padding(top = TeamFisSpacing.xs),
-        )
+    // **헤더만 고정이고 달력부터 아래는 전부 스크롤한다** (MyFIS 홈과 같은 구조).
+    // 헤더는 화면이 직접 그린다 — 셸이 고정하면 회원 상세가 헤더를 걷어낼 수 없다
+    Column(Modifier.fillMaxSize()) {
+        AppHeader()
 
-        Spacer(Modifier.height(TeamFisSpacing.md))
-        // 값은 아직 자리 표시자다 (데이터가 붙으면 갈아끼운다)
-        NextClassBanner(member = "000", time = "오후 2:00")
-
-        ActionTiles(
-            modifier = Modifier.padding(
-                top = TeamFisSpacing.lg,
-                start = TeamFisSpacing.screenHorizontal,
-                end = TeamFisSpacing.screenHorizontal,
-            ),
-        )
-
-        // 오늘 수업 — 큰 카드가 세로로 쌓인다
-        Section(
-            title = "오늘 수업",
-            actionLabel = "전체보기",
-            // 전체 목록 화면이 생기면 연결한다
-            onAction = {},
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = TeamFisSpacing.xxxl),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md)) {
-                placeholderClasses.forEach { item ->
-                    TodayClassCard(
-                        item = item,
-                        modifier = Modifier.padding(horizontal = TeamFisSpacing.screenHorizontal),
-                    )
+            HomeCalendar(
+                selected = selected,
+                month = month,
+                expanded = expanded,
+                onSelect = {
+                    selected = it
+                    month = it
+                },
+                onMonthChange = { month = it },
+                modifier = Modifier.padding(top = TeamFisSpacing.sm),
+            )
+            CalendarBar(
+                expanded = expanded,
+                onToggle = { expanded = !expanded },
+                modifier = Modifier.padding(top = TeamFisSpacing.xs),
+            )
+
+            Spacer(Modifier.height(TeamFisSpacing.md))
+            // 값은 아직 자리 표시자다 (데이터가 붙으면 갈아끼운다)
+            NextClassBanner(member = "000", time = "오후 2:00")
+
+            ActionTiles(
+                modifier = Modifier.padding(
+                    top = TeamFisSpacing.lg,
+                    start = TeamFisSpacing.screenHorizontal,
+                    end = TeamFisSpacing.screenHorizontal,
+                ),
+            )
+
+            // 오늘 수업 — 큰 카드가 세로로 쌓인다
+            Section(
+                title = "오늘 수업",
+                actionLabel = "전체보기",
+                // 전체 목록 화면이 생기면 연결한다
+                onAction = {},
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md)) {
+                    placeholderClasses.forEach { item ->
+                        TodayClassCard(
+                            item = item,
+                            modifier = Modifier.padding(horizontal = TeamFisSpacing.screenHorizontal),
+                        )
+                    }
                 }
             }
-        }
 
-        // 챙길 회원 — 좁은 카드를 가로로 넘긴다
-        Section(title = "챙길 회원") {
-            CareMemberRow(placeholderCare)
-        }
+            // 챙길 회원 — 좁은 카드를 가로로 넘긴다
+            Section(title = "챙길 회원") {
+                CareMemberRow(placeholderCare)
+            }
 
-        // 미작성 일지 — 면 없이 줄만 나눈다
-        Section(title = "미작성 일지", count = placeholderLogs.size) {
-            PendingLogList(placeholderLogs)
-        }
+            // 미작성 일지 — 면 없이 줄만 나눈다
+            Section(title = "미작성 일지", count = placeholderLogs.size) {
+                PendingLogList(placeholderLogs)
+            }
 
-        // 이번 달 — 판 하나에 숫자 셋
-        Section(title = "이번 달") {
-            MonthSummary(placeholderMonth)
+            // 이번 달 — 판 하나에 숫자 셋
+            Section(title = "이번 달") {
+                MonthSummary(placeholderMonth)
+            }
         }
     }
 }
