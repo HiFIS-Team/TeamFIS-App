@@ -43,6 +43,8 @@ struct TabShell: View {
         }
         // 탭 바 위 유리 줄 — 다음 수업. 값은 아직 자리 표시자다 (데이터가 붙으면 갈아끼운다)
         .bottomAccessory(NextClassBar(member: "000", time: "오후 2:00"))
+        // 아래로 스크롤하면 접히고, 맨 위로 오면 다시 펴진다
+        .minimizeTabBarOnScroll()
     }
 
     private var legacyTabs: some View {

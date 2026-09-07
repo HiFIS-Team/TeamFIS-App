@@ -45,4 +45,17 @@ extension View {
             self
         }
     }
+
+    /// 아래로 스크롤하면 탭 바가 **접히고**, 맨 위로 돌아오면 다시 펴진다
+    /// (애플 뮤직과 같은 동작). 접히는 모양·모션은 전부 시스템 것이다.
+    ///
+    /// **iOS 26 부터만 있다** — 그 아래에서는 바가 늘 펴져 있다.
+    @ViewBuilder
+    func minimizeTabBarOnScroll() -> some View {
+        if #available(iOS 26.0, *) {
+            self.tabBarMinimizeBehavior(.onScrollDown)
+        } else {
+            self
+        }
+    }
 }
