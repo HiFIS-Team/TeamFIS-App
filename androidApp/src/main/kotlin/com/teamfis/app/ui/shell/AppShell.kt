@@ -15,11 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.teamfis.app.ui.screens.HomeScreen
+import com.teamfis.app.ui.screens.MemberScreen
 
 /**
  * 앱 셸 — 헤더 + 화면 + 하단 탭 바.
  *
- * 화면은 아직 없다. 탭마다 이름만 띄우는 자리 표시자를 둔다.
+ * 아직 안 만든 탭은 이름만 띄우는 자리 표시자를 둔다.
  */
 @Composable
 fun AppShell() {
@@ -38,6 +39,7 @@ fun AppShell() {
 
             when (selected) {
                 BottomTab.Home -> HomeScreen()
+                BottomTab.Member -> MemberScreen()
                 // 나머지 탭은 아직 자리 표시자다
                 else -> Box(
                     modifier = Modifier.fillMaxSize(),

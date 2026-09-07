@@ -1,10 +1,6 @@
 import SwiftUI
 import SharedKit
 
-/// 접힌 하단 유리 바가 마지막 줄을 덮지 않을 만큼의 아래 여백.
-/// 시스템 여백(펴짐 기준)에 **접힘으로 줄어드는 만큼**을 더한 값이다.
-private let bottomBarClearance: CGFloat = 88
-
 /// 홈.
 ///
 /// 섹션 순서는 **놓치면 손해 보는 순서**다 — 오늘 할 일(오늘 수업) → 챙길 사람(챙길 회원)
@@ -44,11 +40,8 @@ struct HomeScreen: View {
                     pendingLogs
                     monthSummary
                 }
-                // 시스템이 잡아 주는 아래 여백은 **바가 접히면 ~60pt 줄어든다.**
-                // 끝까지 내린 상태가 바로 그 접힌 상태라, 그만큼을 직접 메우지 않으면
-                // 마지막 판이 바에 가린다 (2026-09-07 대표 지시로 가림을 없앴다).
-                // **줄이지 말 것** — 줄이면 마지막 판이 다시 가린다
-                .padding(.bottom, bottomBarClearance)
+                // 접힌 유리 바가 마지막 판을 덮지 않게 (값의 근거는 토큰 주석에)
+                .padding(.bottom, TeamFisSize.bottomBarClearance)
             }
         }
         .onChange(of: selected) { _, new in month = new }
