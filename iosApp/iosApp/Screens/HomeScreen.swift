@@ -1,7 +1,17 @@
 import SwiftUI
 import SharedKit
 
-/// 홈 — 헤더 밑에 캘린더. 아래 내용은 아직 없다.
+/// 접힌 하단 유리 바가 마지막 줄을 덮지 않을 만큼의 아래 여백.
+/// 시스템 여백(펴짐 기준)에 **접힘으로 줄어드는 만큼**을 더한 값이다.
+private let bottomBarClearance: CGFloat = 88
+
+/// 홈.
+///
+/// 섹션 순서는 **놓치면 손해 보는 순서**다 — 오늘 할 일(오늘 수업) → 챙길 사람(챙길 회원)
+/// → 밀린 일(미작성 일지) → 돌아보는 숫자(이번 달).
+///
+/// 섹션마다 **아래 내용의 생김새가 다르다.** 같은 카드가 끝까지 내려오면 화면이 지루하고,
+/// 어디가 어디인지 훑어서 못 찾는다. 제목 줄만 `SectionHeader` 로 통일한다.
 struct HomeScreen: View {
     @State private var selected = Date()
     @State private var month = Date()
@@ -10,10 +20,11 @@ struct HomeScreen: View {
     var body: some View {
         // **헤더만 고정이고 달력부터 아래는 전부 스크롤한다** (MyFIS 홈과 같은 구조).
         //
-        // 헤더는 `safeAreaInset` 으로 붙인다 — VStack 으로 감싸면 스크롤뷰가 탭의 최상위가
-        // 아니게 되어 **시스템이 하단 유리 바 높이만큼 여백을 안 잡아준다.**
-        // 그러면 맨 아래까지 내려도 마지막 줄이 바에 가린다
-        Group {
+        // ⚠️ 이 모양을 바꾸지 않는다. `safeAreaInset` 이나 `Group` 으로 감쌌더니
+        // 하단 유리 바가 **끝까지 내렸을 때 제멋대로 펴졌다** (2026-09-07).
+        VStack(spacing: 0) {
+            AppHeader()
+
             ScrollView {
                 VStack(spacing: 0) {
                     HomeCalendar(selected: $selected, month: $month, expanded: expanded)
@@ -33,11 +44,11 @@ struct HomeScreen: View {
                     pendingLogs
                     monthSummary
                 }
-                .padding(.bottom, TeamFisSpacing.xxxl)
-            }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                // 콘텐츠가 헤더 밑으로 지나가므로 헤더는 **불투명해야** 한다
-                AppHeader().background(TeamFisColor.background)
+                // 시스템이 잡아 주는 아래 여백은 **바가 접히면 ~60pt 줄어든다.**
+                // 끝까지 내린 상태가 바로 그 접힌 상태라, 그만큼을 직접 메우지 않으면
+                // 마지막 판이 바에 가린다 (2026-09-07 대표 지시로 가림을 없앴다).
+                // **줄이지 말 것** — 줄이면 마지막 판이 다시 가린다
+                .padding(.bottom, bottomBarClearance)
             }
         }
         .onChange(of: selected) { _, new in month = new }
