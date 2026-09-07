@@ -9,6 +9,7 @@ import SwiftUI
 /// (검색이 바 안에 다섯 번째 탭으로 들어간다).
 struct TabShell: View {
     @State private var selection: TabItem = .home
+    @State private var query = ""
 
     var body: some View {
         Group {
@@ -30,9 +31,14 @@ struct TabShell: View {
                 }
             }
 
-            // 바 밖에 따로 서는 자리
+            // 바 밖에 따로 서는 자리. 누르면 **바가 검색 필드로 펼쳐진다** —
+            // `.searchable` 을 붙여야 iOS 26 이 그 변형을 해 준다
             Tab(TabItem.search.label, image: iconName(.search), value: TabItem.search, role: .search) {
-                TabScreen(tab: .search)
+                NavigationStack {
+                    SearchScreen(query: query)
+                        .toolbar(.hidden, for: .navigationBar)
+                        .searchable(text: $query, prompt: "회원, 일지, 세션 등")
+                }
             }
         }
     }
