@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 로고 원본 배경과 같은 순검정 -->
+    <color name="ic_launcher_background">#000000</color>
+</resources>
