@@ -15,6 +15,9 @@ enum TeamFisColor {
     static let textTertiary = Color(red: 155 / 255, green: 162 / 255, blue: 175 / 255)
     static let textMuted = Color.white.opacity(0.45)
 
+    /// 줄 구분선 — 면을 안 깔고 줄만 나눌 때
+    static let divider = Color.white.opacity(0.10)
+
     /// 토요일 파랑 · 일요일 빨강 — 한국 달력 관행
     static let weekendSaturday = Color(red: 125 / 255, green: 168 / 255, blue: 255 / 255)
     static let weekendSunday = Color(red: 255 / 255, green: 107 / 255, blue: 107 / 255)

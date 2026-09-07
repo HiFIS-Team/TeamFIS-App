@@ -9,10 +9,7 @@ struct TabScreen: View {
     let tab: TabItem
 
     var body: some View {
-        ZStack {
-            // 유리 바가 콘텐츠 위에 떠 있으므로 배경은 아래까지 깐다
-            Color.black.ignoresSafeArea()
-
+        Group {
             if tab == .home {
                 HomeScreen()
             } else {
@@ -21,10 +18,13 @@ struct TabScreen: View {
 
                     Spacer()
                     Text(tab.label)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(TeamFisColor.textPrimary)
                     Spacer()
                 }
             }
         }
+        // 배경만 안전영역 밖까지 깐다. **화면 자체는 안전영역을 지켜야**
+        // 하단 유리 바 높이만큼 스크롤 끝이 밀려 콘텐츠가 안 가린다
+        .background(TeamFisColor.background.ignoresSafeArea())
     }
 }
