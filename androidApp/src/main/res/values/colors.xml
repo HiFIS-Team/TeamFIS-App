@@ -2,4 +2,6 @@
 <resources>
     <!-- 로고 원본 배경과 같은 순검정 -->
     <color name="ic_launcher_background">#000000</color>
+    <!-- 앱 배경 — 시작 화면(콜드 스타트)부터 검정으로 뜨게 한다 -->
+    <color name="bg_base">#000000</color>
 </resources>

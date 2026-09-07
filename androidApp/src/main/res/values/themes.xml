@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-        디자인이 정해지기 전까지 쓰는 기본 테마.
-        화면 색은 Compose(MaterialTheme)가 그리고, 여기서는 시작 화면(콜드 스타트)
-        배경과 시스템 바만 잡는다.
+        배경은 검정이다. windowBackground 를 맞춰두지 않으면 콜드 스타트마다
+        흰 화면이 한 번 번쩍인다.
     -->
-    <style name="Theme.TeamFIS" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.TeamFIS" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg_base</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 </resources>
