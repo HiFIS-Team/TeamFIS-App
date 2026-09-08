@@ -53,7 +53,7 @@ import java.time.temporal.TemporalAdjusters
  * 상시 떠 있는 것에 액센트 예산을 쓰지 않는다.
  */
 @Composable
-fun HomeCalendar(
+fun ScheduleCalendar(
     selected: LocalDate,
     /** 펼쳤을 때 보이는 달 (그 달의 아무 날) */
     month: LocalDate,

@@ -7,7 +7,7 @@ import SwiftUI
 /// 상시 떠 있는 것에 액센트 예산을 쓰지 않는다.
 ///
 /// 접힌 줄의 알약은 칸을 따라 **흐른다** (`matchedGeometryEffect`).
-struct HomeCalendar: View {
+struct ScheduleCalendar: View {
     @Binding var selected: Date
     /// 펼쳤을 때 보이는 달 (그 달의 아무 날)
     @Binding var month: Date

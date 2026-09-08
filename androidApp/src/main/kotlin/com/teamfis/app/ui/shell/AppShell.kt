@@ -24,10 +24,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.teamfis.app.ui.components.Member
-import com.teamfis.app.ui.screens.HomeScreen
 import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberRegisterScreen
 import com.teamfis.app.ui.screens.MemberScreen
+import com.teamfis.app.ui.screens.ScheduleScreen
 import com.teamfis.app.ui.screens.NotificationScreen
 import com.teamfis.app.ui.screens.MemberPickScreen
 import com.teamfis.app.ui.theme.TeamFisColor
@@ -151,13 +151,13 @@ private fun TabShell(
                 .padding(inner),
         ) {
             when (selected) {
-                BottomTab.Home -> HomeScreen(onNotification = onNotification)
+                BottomTab.Schedule -> ScheduleScreen(onNotification = onNotification)
                 BottomTab.Member -> MemberScreen(
                     onMember = onMember,
                     onNotification = onNotification,
                     onAddMember = onAddMember,
                 )
-                // 나머지 탭은 아직 자리 표시자다
+                // 홈·수업은 아직 자리 표시자다 — 홈은 나머지가 다 찬 뒤에 짠다
                 else -> Column(Modifier.fillMaxSize()) {
                     AppHeader(onNotification = onNotification)
 

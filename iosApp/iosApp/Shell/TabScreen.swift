@@ -14,8 +14,8 @@ struct TabScreen: View {
             Color.black.ignoresSafeArea()
 
             switch tab {
-            case .home:
-                HomeScreen(onNotification: { open(.notifications) })
+            case .schedule:
+                ScheduleScreen(onNotification: { open(.notifications) })
             case .member:
                 MemberScreen(
                     onMember: { open(.memberDetail($0)) },
