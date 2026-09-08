@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.teamfis.app.R
 import com.teamfis.app.ui.components.BodyPart
 import com.teamfis.app.ui.components.DetailInfoRow
 import com.teamfis.app.ui.components.comma
@@ -62,7 +63,13 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
             .navigationBarsPadding(),
     ) {
         // 머리는 고정, 아래만 흐른다 (iOS 와 같은 모양)
-        DetailHeader(title = "${detail.name} 회원님", onBack = onBack)
+        DetailHeader(
+            title = "${detail.name} 회원님",
+            onBack = onBack,
+            // TODO: 회원 설정 화면이 붙으면 연결한다
+            actionIcon = R.drawable.ic_setting,
+            actionDescription = "회원 설정",
+        )
 
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
             MemberProfile(detail, modifier = Modifier.padding(top = TeamFisSpacing.sm))

@@ -22,7 +22,13 @@ struct MemberDetailScreen: View {
     var body: some View {
         // 홈·회원 목록과 같은 `VStack { 고정; ScrollView }` 모양을 지킨다
         VStack(spacing: 0) {
-            DetailHeader(title: "\(detail.name) 회원님", onBack: onBack)
+            DetailHeader(
+                title: "\(detail.name) 회원님",
+                onBack: onBack,
+                // TODO: 회원 설정 화면이 붙으면 연결한다
+                actionIcon: "ic_setting",
+                actionLabel: "회원 설정"
+            )
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
