@@ -133,20 +133,25 @@ fun MemberRegisterScreen(
     ) {
         DetailHeader(title = "회원 등록", onBack = onBack)
 
+        // **스크롤 밖에 둔다.** 이 값이 아래 칸들의 뜻을 정하는데,
+        // 같이 밀려 올라가면 등록권을 적는 동안 어느 모드인지 안 보인다
+        SegmentedTabs(
+            labels = listOf("신규 회원", "재등록"),
+            selected = if (renew) 1 else 0,
+            onSelect = { renew = it == 1 },
+            modifier = Modifier.padding(
+                horizontal = TeamFisSpacing.screenHorizontal,
+                vertical = TeamFisSpacing.sm,
+            ),
+        )
+
         Column(
             Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = TeamFisSpacing.screenHorizontal),
         ) {
-            SegmentedTabs(
-                labels = listOf("신규 회원", "재등록"),
-                selected = if (renew) 1 else 0,
-                onSelect = { renew = it == 1 },
-                modifier = Modifier.padding(top = TeamFisSpacing.sm),
-            )
-
-            Spacer(Modifier.height(TeamFisSpacing.xxl))
+            Spacer(Modifier.height(TeamFisSpacing.md))
 
             if (renew) {
                 FieldLabel("재등록할 회원")

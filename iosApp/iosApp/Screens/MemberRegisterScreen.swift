@@ -68,16 +68,19 @@ struct MemberRegisterScreen: View {
         VStack(spacing: 0) {
             DetailHeader(title: "회원 등록", onBack: onBack)
 
+            // **스크롤 밖에 둔다.** 이 값이 아래 칸들의 뜻을 정하는데,
+            // 같이 밀려 올라가면 등록권을 적는 동안 어느 모드인지 안 보인다
+            SegmentedTabs(
+                labels: ["신규 회원", "재등록"],
+                selected: renew ? 1 : 0,
+                onSelect: { renew = $0 == 1 }
+            )
+            .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+            .padding(.vertical, TeamFisSpacing.sm)
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    SegmentedTabs(
-                        labels: ["신규 회원", "재등록"],
-                        selected: renew ? 1 : 0,
-                        onSelect: { renew = $0 == 1 }
-                    )
-                    .padding(.top, TeamFisSpacing.sm)
-
-                    Spacer().frame(height: TeamFisSpacing.xxl)
+                    Spacer().frame(height: TeamFisSpacing.md)
 
                     if renew {
                         renewSection
