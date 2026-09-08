@@ -110,6 +110,8 @@ struct AppRoot: View {
             switch route {
             case .memberDetail(let member):
                 MemberDetailScreen(member: member, onBack: back)
+            case .notifications:
+                NotificationScreen(onBack: back)
             }
         }
     }

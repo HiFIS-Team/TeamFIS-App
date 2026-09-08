@@ -41,7 +41,7 @@ struct TabShell: View {
             // `.searchable` 을 붙여야 iOS 26 이 그 변형을 해 준다
             Tab(TabItem.search.label, image: iconName(.search), value: TabItem.search, role: .search) {
                 NavigationStack {
-                    SearchScreen(query: query)
+                    SearchScreen(query: query, onNotification: { self.open(.notifications) })
                         .toolbar(.hidden, for: .navigationBar)
                         .searchable(text: $query, prompt: "회원, 일지, 세션 등")
                 }

@@ -24,6 +24,16 @@ enum TeamFisColor {
     /// 예정은 누를 것이 아니라 알려 주는 것이라 색을 갈라야 한다.
     static let scheduled = Color(red: 46 / 255, green: 158 / 255, blue: 91 / 255)
 
+    /// 갈래 색 — 알림 종류처럼 **여러 갈래를 색으로 가르는** 자리에만 쓴다.
+    ///
+    /// 브랜드 레드는 여기 끼지 않는다. 액션 색이 갈래 하나를 맡으면
+    /// 그 갈래만 눌러야 할 것처럼 보인다.
+    static let categoryBlue = Color(red: 125 / 255, green: 168 / 255, blue: 255 / 255)
+    static let categoryGreen = Color(red: 74 / 255, green: 222 / 255, blue: 128 / 255)
+    static let categoryViolet = Color(red: 167 / 255, green: 139 / 255, blue: 250 / 255)
+    static let categoryCoral = Color(red: 255 / 255, green: 138 / 255, blue: 107 / 255)
+    static let categoryGray = Color(red: 155 / 255, green: 162 / 255, blue: 175 / 255)
+
     /// 토요일 파랑 · 일요일 빨강 — 한국 달력 관행
     static let weekendSaturday = Color(red: 125 / 255, green: 168 / 255, blue: 255 / 255)
     static let weekendSunday = Color(red: 255 / 255, green: 107 / 255, blue: 107 / 255)

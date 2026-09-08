@@ -13,12 +13,13 @@ import SwiftUI
 /// 하단 유리 바까지 덮는 잎 화면이라 뿌리(`AppRoot`)만 띄울 수 있다 — 여기서는 요청만 한다.
 struct MemberScreen: View {
     var onMember: (Member) -> Void = { _ in }
+    var onNotification: () -> Void = {}
 
     @State private var filter: MemberStatus?
 
     var body: some View {
         VStack(spacing: 0) {
-            AppHeader()
+            AppHeader(onNotification: onNotification)
 
             MemberFilterBar(
                 selected: filter,

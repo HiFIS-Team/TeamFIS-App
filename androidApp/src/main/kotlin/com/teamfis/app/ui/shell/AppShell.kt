@@ -27,6 +27,7 @@ import com.teamfis.app.ui.components.Member
 import com.teamfis.app.ui.screens.HomeScreen
 import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberScreen
+import com.teamfis.app.ui.screens.NotificationScreen
 import com.teamfis.app.ui.theme.TeamFisColor
 
 /**
@@ -62,7 +63,11 @@ fun AppShell() {
                     openedMember = it
                     nav.navigateOnce(Route.MEMBER_DETAIL)
                 },
+                onNotification = { nav.navigateOnce(Route.NOTIFICATIONS) },
             )
+        }
+        composable(Route.NOTIFICATIONS) {
+            NotificationScreen(onBack = { nav.popBackStack() })
         }
         composable(Route.MEMBER_DETAIL) {
             // 뒤로 간 직후 한 프레임 동안 null 이 될 수 있어 방어한다
@@ -83,7 +88,7 @@ fun AppShell() {
  * 아직 안 만든 탭은 이름만 띄우는 자리 표시자를 둔다.
  */
 @Composable
-private fun TabShell(onMember: (Member) -> Unit) {
+private fun TabShell(onMember: (Member) -> Unit, onNotification: () -> Unit) {
     // ⚠️ `remember` 면 안 된다. 잎이 덮는 동안 셸은 컴포지션에서 빠지므로
     // 그냥 기억하면 **돌아왔을 때 홈 탭으로 리셋된다** (2026-09-08 확인)
     var selected by rememberSaveable { mutableStateOf(BottomTab.Home) }
@@ -98,11 +103,14 @@ private fun TabShell(onMember: (Member) -> Unit) {
                 .padding(inner),
         ) {
             when (selected) {
-                BottomTab.Home -> HomeScreen()
-                BottomTab.Member -> MemberScreen(onMember = onMember)
+                BottomTab.Home -> HomeScreen(onNotification = onNotification)
+                BottomTab.Member -> MemberScreen(
+                    onMember = onMember,
+                    onNotification = onNotification,
+                )
                 // 나머지 탭은 아직 자리 표시자다
                 else -> Column(Modifier.fillMaxSize()) {
-                    AppHeader()
+                    AppHeader(onNotification = onNotification)
 
                     Box(
                         modifier = Modifier.fillMaxSize(),

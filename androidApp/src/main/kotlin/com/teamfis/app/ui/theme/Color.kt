@@ -37,6 +37,18 @@ object TeamFisColor {
      */
     val Scheduled = Color(0xFF2E9E5B)
 
+    /**
+     * 갈래 색 — 알림 종류처럼 **여러 갈래를 색으로 가르는** 자리에만 쓴다.
+     *
+     * 브랜드 레드는 여기 끼지 않는다. 액션 색이 갈래 하나를 맡으면
+     * 그 갈래만 눌러야 할 것처럼 보인다.
+     */
+    val CategoryBlue = Color(0xFF7DA8FF)
+    val CategoryGreen = Color(0xFF4ADE80)
+    val CategoryViolet = Color(0xFFA78BFA)
+    val CategoryCoral = Color(0xFFFF8A6B)
+    val CategoryGray = Color(0xFF9BA2AF)
+
     /** 토요일 파랑 · 일요일 빨강 — 한국 달력 관행 */
     val WeekendSaturday = Color(0xFF7DA8FF)
     val WeekendSunday = Color(0xFFFF6B6B)

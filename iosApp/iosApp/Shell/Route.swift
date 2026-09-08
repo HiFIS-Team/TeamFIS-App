@@ -7,4 +7,6 @@ import SwiftUI
 enum Route: Hashable {
     /// 회원 상세 — 회원 목록의 한 줄을 누르면 들어온다
     case memberDetail(Member)
+    /// 알림함 — 헤더의 종을 누르면 들어온다
+    case notifications
 }

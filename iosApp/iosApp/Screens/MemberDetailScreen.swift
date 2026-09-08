@@ -2,8 +2,8 @@ import SwiftUI
 
 /// 회원 상세 — 목록에서 한 명을 눌렀을 때.
 ///
-/// **워드마크 헤더가 없다.** 파고든 자리라 지금 필요한 것은 돌아갈 길이다
-/// (`MemberDetailTopBar` 가 뒤로가기만 그린다).
+/// **제목 없는 `DetailHeader`** 를 쓴다 — 이름을 본문에서 크게 다루므로
+/// 머리에 또 적으면 같은 말이 두 번이다.
 ///
 /// 순서는 **사람 → 등록 → 회차**다. 누구인지 알고, 뭘 끊었는지 보고,
 /// 그 아래에서 회차를 처리한다.
@@ -22,7 +22,7 @@ struct MemberDetailScreen: View {
     var body: some View {
         // 홈·회원 목록과 같은 `VStack { 고정; ScrollView }` 모양을 지킨다
         VStack(spacing: 0) {
-            MemberDetailTopBar(onBack: onBack)
+            DetailHeader(title: nil, onBack: onBack)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {

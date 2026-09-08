@@ -15,12 +15,15 @@ struct TabScreen: View {
 
             switch tab {
             case .home:
-                HomeScreen()
+                HomeScreen(onNotification: { open(.notifications) })
             case .member:
-                MemberScreen(onMember: { open(.memberDetail($0)) })
+                MemberScreen(
+                    onMember: { open(.memberDetail($0)) },
+                    onNotification: { open(.notifications) }
+                )
             default:
                 VStack(spacing: 0) {
-                    AppHeader()
+                    AppHeader(onNotification: { open(.notifications) })
 
                     Spacer()
                     Text(tab.label)

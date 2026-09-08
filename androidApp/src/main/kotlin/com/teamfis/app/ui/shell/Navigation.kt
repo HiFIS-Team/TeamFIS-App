@@ -13,6 +13,9 @@ object Route {
 
     /** 회원 상세 — 회원 목록의 한 줄을 누르면 들어온다 */
     const val MEMBER_DETAIL = "member_detail"
+
+    /** 알림함 — 헤더의 종을 누르면 들어온다 */
+    const val NOTIFICATIONS = "notifications"
 }
 
 /**

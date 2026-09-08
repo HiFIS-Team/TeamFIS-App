@@ -9,6 +9,8 @@ import SharedKit
 /// 섹션마다 **아래 내용의 생김새가 다르다.** 같은 카드가 끝까지 내려오면 화면이 지루하고,
 /// 어디가 어디인지 훑어서 못 찾는다. 제목 줄만 `SectionHeader` 로 통일한다.
 struct HomeScreen: View {
+    var onNotification: () -> Void = {}
+
     @State private var selected = Date()
     @State private var month = Date()
     @State private var expanded = false
@@ -19,7 +21,7 @@ struct HomeScreen: View {
         // ⚠️ 이 모양을 바꾸지 않는다. `safeAreaInset` 이나 `Group` 으로 감쌌더니
         // 하단 유리 바가 **끝까지 내렸을 때 제멋대로 펴졌다** (2026-09-07).
         VStack(spacing: 0) {
-            AppHeader()
+            AppHeader(onNotification: onNotification)
 
             ScrollView {
                 VStack(spacing: 0) {

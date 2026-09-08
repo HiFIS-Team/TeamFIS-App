@@ -7,6 +7,7 @@ import SwiftUI
 /// 필드·마이크·모션이 전부 시스템 것이라 우리가 만들 것이 없다.
 struct SearchScreen: View {
     let query: String
+    var onNotification: () -> Void = {}
 
     var body: some View {
         ZStack {
@@ -14,7 +15,7 @@ struct SearchScreen: View {
 
             VStack(spacing: 0) {
                 // 헤더는 다른 탭과 같이 화면이 들고 있다
-                AppHeader()
+                AppHeader(onNotification: onNotification)
 
                 Spacer()
                 Text(query.isEmpty ? "검색" : "'\(query)' 결과 없음")

@@ -23,11 +23,11 @@ import androidx.compose.ui.unit.dp
 import com.teamfis.app.ui.components.BodyPart
 import com.teamfis.app.ui.components.Member
 import com.teamfis.app.ui.components.MemberDetail
-import com.teamfis.app.ui.components.MemberDetailTopBar
 import com.teamfis.app.ui.components.MemberProduct
 import com.teamfis.app.ui.components.MemberProfile
 import com.teamfis.app.ui.components.MemberSession
 import com.teamfis.app.ui.components.ProductSelector
+import com.teamfis.app.ui.shell.DetailHeader
 import com.teamfis.app.ui.components.SessionCard
 import com.teamfis.app.ui.components.SessionStatus
 import com.teamfis.app.ui.theme.TeamFisColor
@@ -36,8 +36,8 @@ import com.teamfis.app.ui.theme.TeamFisSpacing
 /**
  * 회원 상세 — 목록에서 한 명을 눌렀을 때.
  *
- * **워드마크 헤더가 없다.** 파고든 자리라 지금 필요한 것은 돌아갈 길이다
- * ([MemberDetailTopBar] 가 뒤로가기만 그린다).
+ * **제목 없는 [DetailHeader]** 를 쓴다 — 이름을 본문에서 크게 다루므로
+ * 머리에 또 적으면 같은 말이 두 번이다.
  *
  * 순서는 **사람 → 등록 → 회차**다. 누구인지 알고, 뭘 끊었는지 보고,
  * 그 아래에서 회차를 처리한다.
@@ -59,7 +59,7 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
             .navigationBarsPadding(),
     ) {
         // 머리는 고정, 아래만 흐른다 (iOS 와 같은 모양)
-        MemberDetailTopBar(onBack = onBack)
+        DetailHeader(title = null, onBack = onBack)
 
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
             MemberProfile(detail, modifier = Modifier.padding(top = TeamFisSpacing.sm))

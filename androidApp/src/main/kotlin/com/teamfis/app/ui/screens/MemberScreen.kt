@@ -37,7 +37,7 @@ import com.teamfis.app.ui.theme.TeamFisType
  * 하단 탭 바까지 덮는 잎 화면이라 셸만 띄울 수 있다 — 여기서는 요청만 한다.
  */
 @Composable
-fun MemberScreen(onMember: (Member) -> Unit = {}) {
+fun MemberScreen(onMember: (Member) -> Unit = {}, onNotification: () -> Unit = {}) {
     var filter by rememberSaveable { mutableStateOf<MemberStatus?>(null) }
 
     val counts = remember { placeholderMembers.groupingBy { it.status }.eachCount() }
@@ -46,7 +46,7 @@ fun MemberScreen(onMember: (Member) -> Unit = {}) {
     }
 
     Column(Modifier.fillMaxSize()) {
-        AppHeader()
+        AppHeader(onNotification = onNotification)
 
         MemberFilterBar(
             selected = filter,

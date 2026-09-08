@@ -28,4 +28,7 @@ object TeamFisSize {
 
     /** 알약 칩 높이 — 펼쳐보기 같은 것 */
     val chip = 36.dp
+
+    /** 목록 한 줄의 최소 높이 — 글이 짧아도 줄이 납작해지지 않게 */
+    val listRowMin = 56.dp
 }

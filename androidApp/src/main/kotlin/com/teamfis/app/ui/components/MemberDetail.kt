@@ -78,38 +78,6 @@ enum class BodyPart(val label: String, @DrawableRes val icon: Int) {
 }
 
 /**
- * 상세 맨 위 줄 — **뒤로가기만 있다.**
- *
- * 여기서는 `TeamFIS` 워드마크를 안 쓴다. 상세는 목록에서 파고든 자리라
- * 지금 필요한 것은 브랜드가 아니라 **돌아갈 길**이다.
- */
-@Composable
-fun MemberDetailTopBar(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(TopBarHeight)
-            .padding(horizontal = TeamFisSpacing.screenHorizontal - (TouchTarget - Icon24) / 2),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val interaction = remember { MutableInteractionSource() }
-        Box(
-            modifier = Modifier
-                .size(TouchTarget)
-                .clickable(interactionSource = interaction, indication = null, onClick = onBack),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_chevron_left),
-                contentDescription = "뒤로",
-                tint = TeamFisColor.TextPrimary,
-                modifier = Modifier.size(Icon24),
-            )
-        }
-    }
-}
-
-/**
  * 이름 줄 + 연락처 줄.
  *
  * 이름이 이 화면에서 제일 큰 글자다. 전화는 **이름 줄 오른쪽 끝**에 둔다 —
@@ -405,7 +373,6 @@ fun BodyPartChips(parts: List<BodyPart>, modifier: Modifier = Modifier) {
     }
 }
 
-private val TopBarHeight = 56.dp
 private val TouchTarget = 44.dp
 private val Icon24 = 24.dp
 private val ButtonHeight = 48.dp

@@ -60,7 +60,7 @@ import java.time.LocalDate
  * 어디가 어디인지 훑어서 못 찾는다. 제목 줄만 [SectionHeader] 로 통일한다.
  */
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onNotification: () -> Unit = {}) {
     var selected by remember { mutableStateOf(LocalDate.now()) }
     var month by remember { mutableStateOf(LocalDate.now()) }
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -68,7 +68,7 @@ fun HomeScreen() {
     // **헤더만 고정이고 달력부터 아래는 전부 스크롤한다** (MyFIS 홈과 같은 구조).
     // 헤더는 화면이 직접 그린다 — 셸이 고정하면 회원 상세가 헤더를 걷어낼 수 없다
     Column(Modifier.fillMaxSize()) {
-        AppHeader()
+        AppHeader(onNotification = onNotification)
 
         Column(
             Modifier

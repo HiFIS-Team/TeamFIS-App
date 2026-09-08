@@ -69,34 +69,6 @@ enum BodyPart: CaseIterable {
     }
 }
 
-/// 상세 맨 위 줄 — **뒤로가기만 있다.**
-///
-/// 여기서는 `TeamFIS` 워드마크를 안 쓴다. 상세는 목록에서 파고든 자리라
-/// 지금 필요한 것은 브랜드가 아니라 **돌아갈 길**이다.
-struct MemberDetailTopBar: View {
-    let onBack: () -> Void
-
-    var body: some View {
-        HStack(spacing: 0) {
-            Button(action: onBack) {
-                Image("ic_chevron_left")
-                    .renderingMode(.template)
-                    .resizable()
-                    .frame(width: Header.icon, height: Header.icon)
-                    .frame(width: Header.touchTarget, height: Header.touchTarget)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .foregroundStyle(TeamFisColor.textPrimary)
-            .accessibilityLabel("뒤로")
-
-            Spacer(minLength: 0)
-        }
-        .frame(height: Header.height)
-        .padding(.horizontal, Header.screenHorizontal - (Header.touchTarget - Header.icon) / 2)
-    }
-}
-
 /// 이름 줄 + 연락처 줄.
 ///
 /// 이름이 이 화면에서 제일 큰 글자다. 전화는 **이름 줄 오른쪽 끝**에 둔다 —
