@@ -23,12 +23,14 @@ import com.teamfis.app.R
 /**
  * **상단 헤더** — 왼쪽 워드마크, 오른쪽 아이콘.
  *
- * 아이콘은 안드로이드가 셋(검색·알림·마이), iOS 가 둘(알림·마이)이다.
+ * 아이콘은 안드로이드가 넷(검색·메시지·알림·마이), iOS 가 셋(메시지·알림·마이)이다.
+ * iOS 에 검색이 없는 것은 하단 유리 바가 검색을 맡기 때문이다.
  * 벡터는 MyFIS 와 같은 것을 쓴다 (아웃라인 1.5px).
  */
 @Composable
 fun AppHeader(
     onSearch: () -> Unit = {},
+    onMessage: () -> Unit = {},
     onNotification: () -> Unit = {},
     onMy: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -52,6 +54,8 @@ fun AppHeader(
         Spacer(Modifier.weight(1f))
 
         HeaderIcon(R.drawable.ic_header_search, "검색", onSearch)
+        // TODO: 메시지 화면이 붙으면 연결한다
+        HeaderIcon(R.drawable.ic_header_message, "메시지", onMessage)
         HeaderIcon(R.drawable.ic_header_notification, "알림", onNotification)
         HeaderIcon(R.drawable.ic_header_my, "마이", onMy)
     }
