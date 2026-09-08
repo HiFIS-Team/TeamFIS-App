@@ -30,10 +30,15 @@ struct Member: Identifiable, Hashable {
 /// 그게 이 화면의 기본이다. `전체` 칸을 따로 두지 않는 이유다.
 ///
 /// 칩마다 숫자를 달아 **고르지 않고도 갈래별 규모**가 보이게 한다.
+///
+/// 오른쪽 끝에 **회원 추가**가 선다 (iOS 만). 이 줄은 스크롤을 내려도 고정이라
+/// 목록이 아무리 길어도 손에 닿고, 오른쪽이 원래 비어 있던 자리다.
+/// 안드로이드는 같은 일을 FAB 이 한다 — **일부러 다르다.**
 struct MemberFilterBar: View {
     let selected: MemberStatus?
     let counts: [MemberStatus: Int]
     let onSelect: (MemberStatus) -> Void
+    var onAdd: (() -> Void)?
 
     var body: some View {
         HStack(spacing: TeamFisSpacing.sm) {
@@ -48,8 +53,38 @@ struct MemberFilterBar: View {
             }
 
             Spacer(minLength: 0)
+
+            if let onAdd {
+                AddMemberButton(action: onAdd)
+            }
         }
         .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+    }
+}
+
+/// 회원 추가 — 칩과 같은 높이의 네모에 **플러스만 브랜드 레드**다.
+///
+/// 바탕까지 빨갛게 채우지 않는다. 고른 필터 칩이 이미 빨간 **면**이라,
+/// 같은 줄에 빨간 면이 둘이면 어느 게 선택인지 흐려진다. 면과 선으로 갈라 둔다.
+private struct AddMemberButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image("ic_plus")
+                .renderingMode(.template)
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundStyle(TeamFisColor.brand)
+                .frame(width: TeamFisSize.chip, height: TeamFisSize.chip)
+                .background(
+                    RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
+                        .fill(TeamFisColor.surface1)
+                )
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("회원 추가")
     }
 }
 

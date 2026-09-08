@@ -11,9 +11,13 @@ import SwiftUI
 ///
 /// 한 명을 누르면 상세가 열리는데, **이 화면이 상세를 그리지 않는다.** 상세는
 /// 하단 유리 바까지 덮는 잎 화면이라 뿌리(`AppRoot`)만 띄울 수 있다 — 여기서는 요청만 한다.
+///
+/// 회원 추가는 **필터 줄 오른쪽 끝**이다 (2026-09-08 대표 지정). iOS 엔 FAB 관습이 없고
+/// 오른쪽 아래엔 다음 수업 유리 줄이 이미 떠 있다. 안드로이드는 표준대로 FAB 을 쓴다.
 struct MemberScreen: View {
     var onMember: (Member) -> Void = { _ in }
     var onNotification: () -> Void = {}
+    var onAddMember: () -> Void = {}
 
     @State private var filter: MemberStatus?
 
@@ -25,7 +29,9 @@ struct MemberScreen: View {
                 selected: filter,
                 counts: Self.counts,
                 // 고른 것을 다시 누르면 풀려서 전체로 돌아온다
-                onSelect: { filter = (filter == $0) ? nil : $0 }
+                onSelect: { filter = (filter == $0) ? nil : $0 },
+                // TODO: 회원 추가 화면이 붙으면 연결한다
+                onAdd: onAddMember
             )
             .padding(.top, TeamFisSpacing.sm)
             .padding(.bottom, TeamFisSpacing.md)
