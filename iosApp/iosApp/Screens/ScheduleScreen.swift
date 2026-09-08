@@ -24,17 +24,13 @@ struct ScheduleScreen: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    dateTitle
-                        .padding(.top, TeamFisSpacing.sm)
-                        .padding(.horizontal, TeamFisSpacing.screenHorizontal)
-
                     ScheduleCalendar(
                         selected: $selected,
                         month: $month,
                         expanded: expanded,
                         hasClass: Self.hasClass
                     )
-                    .padding(.top, TeamFisSpacing.md)
+                    .padding(.top, TeamFisSpacing.sm)
 
                     CalendarBar(expanded: expanded) {
                         withAnimation(TeamFisMotion.slow) { expanded.toggle() }
@@ -62,20 +58,6 @@ struct ScheduleScreen: View {
             }
         }
         .onChange(of: selected) { _, new in month = new }
-    }
-
-    /// 그날이 언제인지 — `9월 8일 화요일`.
-    ///
-    /// 달력 위에 크게 둔다. 주 달력만 있으면 **몇 월인지가 안 보인다** —
-    /// 숫자만 일곱 개 서 있어서다.
-    private var dateTitle: some View {
-        let parts = Calendar.current.dateComponents([.month, .day], from: selected)
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "EEEE"
-        return Text("\(parts.month ?? 0)월 \(parts.day ?? 0)일 \(formatter.string(from: selected))")
-            .font(TeamFisFont.titleLg)
-            .foregroundStyle(TeamFisColor.textPrimary)
     }
 
     /// 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 일정을 주면 통째로 걷어낸다.

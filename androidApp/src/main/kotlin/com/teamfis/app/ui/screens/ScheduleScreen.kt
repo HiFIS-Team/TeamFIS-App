@@ -67,8 +67,6 @@ fun ScheduleScreen(onNotification: () -> Unit = {}) {
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = TeamFisSpacing.xxxl),
         ) {
-            DateTitle(selected, Modifier.padding(top = TeamFisSpacing.sm))
-
             ScheduleCalendar(
                 selected = selected,
                 month = month,
@@ -78,7 +76,7 @@ fun ScheduleScreen(onNotification: () -> Unit = {}) {
                     month = it
                 },
                 onMonthChange = { month = it },
-                modifier = Modifier.padding(top = TeamFisSpacing.md),
+                modifier = Modifier.padding(top = TeamFisSpacing.sm),
                 hasClass = ::hasClass,
             )
             CalendarBar(
@@ -114,33 +112,6 @@ fun ScheduleScreen(onNotification: () -> Unit = {}) {
         }
     }
 }
-
-/**
- * 그날이 언제인지 — `9월 8일 화요일`.
- *
- * 달력 위에 크게 둔다. 주 달력만 있으면 **몇 월인지가 안 보인다** —
- * 숫자만 일곱 개 서 있어서다.
- */
-@Composable
-private fun DateTitle(date: java.time.LocalDate, modifier: Modifier = Modifier) {
-    Text(
-        "${date.monthValue}월 ${date.dayOfMonth}일 ${date.dayOfWeek.koFull}",
-        style = TeamFisType.titleLg,
-        color = TeamFisColor.TextPrimary,
-        modifier = modifier.padding(horizontal = TeamFisSpacing.screenHorizontal),
-    )
-}
-
-private val java.time.DayOfWeek.koFull: String
-    get() = when (this) {
-        java.time.DayOfWeek.MONDAY -> "월요일"
-        java.time.DayOfWeek.TUESDAY -> "화요일"
-        java.time.DayOfWeek.WEDNESDAY -> "수요일"
-        java.time.DayOfWeek.THURSDAY -> "목요일"
-        java.time.DayOfWeek.FRIDAY -> "금요일"
-        java.time.DayOfWeek.SATURDAY -> "토요일"
-        java.time.DayOfWeek.SUNDAY -> "일요일"
-    }
 
 /**
  * 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 일정을 주면 통째로 걷어낸다.
