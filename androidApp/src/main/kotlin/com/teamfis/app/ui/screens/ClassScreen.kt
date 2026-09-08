@@ -41,12 +41,12 @@ import java.time.LocalDate
  *
  * 목록이 길어지므로 필터 줄은 **위에 고정**한다 (회원 목록과 같은 이유).
  *
- * **누르면 가는 곳이 갈래마다 다르다.** 사인은 회원이 그 자리에서 그어야 하니 서명
- * 화면으로 바로 가고, 일지는 수업 상세로 간다 (거기서 읽는다).
+ * **누르면 가는 곳이 갈래마다 다르다.** 밀린 일을 바로 처리하는 자리라 일지는
+ * 작성 화면으로, 사인은 서명 화면으로 곧장 간다.
  */
 @Composable
 fun ClassScreen(
-    onClass: (ScheduleClass) -> Unit = {},
+    onLog: (ClassTodo) -> Unit = {},
     onSign: (ClassTodo) -> Unit = {},
     onNotification: () -> Unit = {},
 ) {
@@ -85,7 +85,7 @@ fun ClassScreen(
                     ClassCard(
                         todo,
                         onClick = {
-                            if (filter == ClassFilter.Sign) onSign(todo) else onClass(todo.item)
+                            if (filter == ClassFilter.Sign) onSign(todo) else onLog(todo)
                         },
                     )
                 }

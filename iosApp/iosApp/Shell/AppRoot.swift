@@ -122,6 +122,8 @@ struct AppRoot: View {
                 MemberDetailScreen(member: member, onBack: back)
             case .scheduleDetail(let item):
                 ScheduleDetailScreen(item: item, onBack: back)
+            case .classLog(let todo):
+                ClassLogScreen(todo: todo, onBack: back)
             case .classSign(let todo):
                 ClassSignScreen(todo: todo, onBack: back)
             case .notifications:
