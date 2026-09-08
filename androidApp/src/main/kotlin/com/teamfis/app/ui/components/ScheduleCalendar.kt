@@ -46,11 +46,14 @@ import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
 /**
- * 홈 캘린더 — 헤더 바로 밑.
+ * 일정 캘린더 — 헤더 바로 밑.
  *
  * 평소에는 **이번 주 한 줄**, `펼쳐보기` 를 누르면 **그 달 전체**로 늘어난다.
  * 선택은 하단 탭과 다른 규칙이다 — **브랜드 레드를 쓰지 않는다.**
  * 상시 떠 있는 것에 액센트 예산을 쓰지 않는다.
+ *
+ * @param hasClass 그날 수업이 있으면 날짜 밑에 **점**이 찍힌다. 어느 날을 눌러 볼지
+ *   정하는 값이라 달력이 스스로 알아야 한다.
  */
 @Composable
 fun ScheduleCalendar(
@@ -61,6 +64,7 @@ fun ScheduleCalendar(
     onSelect: (LocalDate) -> Unit,
     onMonthChange: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
+    hasClass: (LocalDate) -> Boolean = { false },
 ) {
     // 높이만 줄이면 **내용이 먼저 사라지고 빈칸이 뒤늦게 닫힌다** — 아래 줄이 늦게 따라오는 것처럼 보인다.
     // 접힐 때도 내용과 높이가 같이 움직이도록 `AnimatedVisibility` 로 감싼다.
@@ -70,7 +74,12 @@ fun ScheduleCalendar(
             enter = expandVertically(TeamFisMotion.slow()) + fadeIn(TeamFisMotion.slow()),
             exit = shrinkVertically(TeamFisMotion.slow()) + fadeOut(TeamFisMotion.slow()),
         ) {
-            WeekStrip(week = weekOf(selected), selected = selected, onSelect = onSelect)
+            WeekStrip(
+                week = weekOf(selected),
+                selected = selected,
+                onSelect = onSelect,
+                hasClass = hasClass,
+            )
         }
         AnimatedVisibility(
             visible = expanded,
@@ -85,7 +94,7 @@ fun ScheduleCalendar(
                 )
                 WeekdayHeader()
                 monthWeeks(month).forEach { week ->
-                    MonthRow(week = week, selected = selected, onSelect = onSelect)
+                    MonthRow(week = week, selected = selected, onSelect = onSelect, hasClass = hasClass)
                 }
             }
         }
@@ -94,7 +103,12 @@ fun ScheduleCalendar(
 
 /** 접힌 상태 — 요일과 날짜가 한 칸에 있고, 고른 칸만 알약이 채워진다 */
 @Composable
-private fun WeekStrip(week: List<LocalDate>, selected: LocalDate, onSelect: (LocalDate) -> Unit) {
+private fun WeekStrip(
+    week: List<LocalDate>,
+    selected: LocalDate,
+    onSelect: (LocalDate) -> Unit,
+    hasClass: (LocalDate) -> Boolean,
+) {
     val index = week.indexOf(selected).coerceAtLeast(0)
 
     BoxWithConstraints(
@@ -122,6 +136,7 @@ private fun WeekStrip(week: List<LocalDate>, selected: LocalDate, onSelect: (Loc
                 DayCell(
                     day = day,
                     selected = day == selected,
+                    marked = hasClass(day),
                     onClick = { onSelect(day) },
                     modifier = Modifier.weight(1f),
                 )
@@ -210,7 +225,12 @@ private fun WeekdayHeader() {
 
 /** 펼친 상태의 한 주 — 날짜만 있고, 고른 날은 밑에 점이 붙는다 */
 @Composable
-private fun MonthRow(week: List<LocalDate?>, selected: LocalDate, onSelect: (LocalDate) -> Unit) {
+private fun MonthRow(
+    week: List<LocalDate?>,
+    selected: LocalDate,
+    onSelect: (LocalDate) -> Unit,
+    hasClass: (LocalDate) -> Boolean,
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -218,14 +238,14 @@ private fun MonthRow(week: List<LocalDate?>, selected: LocalDate, onSelect: (Loc
     ) {
         week.forEach { day ->
             Box(Modifier.weight(1f).height(50.dp), contentAlignment = Alignment.Center) {
-                if (day != null) MonthDay(day, day == selected) { onSelect(day) }
+                if (day != null) MonthDay(day, day == selected, hasClass(day)) { onSelect(day) }
             }
         }
     }
 }
 
 @Composable
-private fun MonthDay(day: LocalDate, selected: Boolean, onClick: () -> Unit) {
+private fun MonthDay(day: LocalDate, selected: Boolean, marked: Boolean, onClick: () -> Unit) {
     val dateFg by animateColorAsState(
         if (selected) TeamFisColor.TextPrimary else day.dayOfWeek.weekendColor ?: TeamFisColor.TextSecondary,
         TeamFisMotion.base(),
@@ -243,11 +263,20 @@ private fun MonthDay(day: LocalDate, selected: Boolean, onClick: () -> Unit) {
                 color = dateFg,
             )
         }
-        // 고른 날은 **동그라미 대신 밑에 점**이다 — 달력이 조용해진다
+        // 고른 날은 **동그라미 대신 밑에 점**이다 — 달력이 조용해진다.
+        // 수업이 있는 날도 같은 점을 쓰되 색이 낮다. 고른 날이 이기는데,
+        // 그 날 수업은 바로 밑에 목록으로 서 있어 표시가 없어도 안 잃는다
         Box(
             Modifier
                 .size(DotSize)
-                .background(if (selected) TeamFisColor.TextPrimary else Color.Transparent, CircleShape),
+                .background(
+                    when {
+                        selected -> TeamFisColor.TextPrimary
+                        marked -> TeamFisColor.TextSecondary
+                        else -> Color.Transparent
+                    },
+                    CircleShape,
+                ),
         )
     }
 }
@@ -256,6 +285,7 @@ private fun MonthDay(day: LocalDate, selected: Boolean, onClick: () -> Unit) {
 private fun DayCell(
     day: LocalDate,
     selected: Boolean,
+    marked: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -294,6 +324,15 @@ private fun DayCell(
                 style = TeamFisType.titleSm.copy(fontFeatureSettings = "tnum"),
                 color = dateFg,
             )
+            // 수업이 있는 날 표시 — 숫자 아래에 얹는다. 줄을 하나 더 두면 칸이 넘친다
+            if (marked) {
+                Box(
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .size(DotSize)
+                        .background(TeamFisColor.TextSecondary, CircleShape),
+                )
+            }
         }
     }
 }

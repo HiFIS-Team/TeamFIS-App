@@ -9,7 +9,8 @@ import SwiftUI
 /// `safeAreaInset` 이나 `Group` 으로 감싸면 하단 유리 바가 **끝까지 내렸을 때
 /// 제멋대로 펴진다** (2026-09-07 에 홈에서 겪었다).
 ///
-/// 고른 날의 수업 목록이 아직 없다 — 붙으면 달력 밑에 온다.
+/// 짜임새는 팀버핏 코치 앱을 참고했다 (2026-09-08 대표 지시) —
+/// 큰 날짜 제목 → 주 달력 → 그날 수업 카드. 값은 TeamFIS 것(PT 1:1)으로 갈았다.
 struct ScheduleScreen: View {
     var onNotification: () -> Void = {}
 
@@ -22,19 +23,84 @@ struct ScheduleScreen: View {
             AppHeader(onNotification: onNotification)
 
             ScrollView {
-                VStack(spacing: 0) {
-                    ScheduleCalendar(selected: $selected, month: $month, expanded: expanded)
+                VStack(alignment: .leading, spacing: 0) {
+                    dateTitle
                         .padding(.top, TeamFisSpacing.sm)
+                        .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+
+                    ScheduleCalendar(
+                        selected: $selected,
+                        month: $month,
+                        expanded: expanded,
+                        hasClass: Self.hasClass
+                    )
+                    .padding(.top, TeamFisSpacing.md)
+
                     CalendarBar(expanded: expanded) {
                         withAnimation(TeamFisMotion.slow) { expanded.toggle() }
                     }
                     .padding(.top, TeamFisSpacing.xs)
+
+                    let classes = Self.classes(on: selected)
+                    if classes.isEmpty {
+                        Text("일정이 없어요")
+                            .font(TeamFisFont.bodySm)
+                            .foregroundStyle(TeamFisColor.textMuted)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, TeamFisSpacing.xxxl)
+                    } else {
+                        VStack(spacing: TeamFisSpacing.md) {
+                            // TODO: 수업 상세가 붙으면 카드를 연결한다
+                            ForEach(classes) { ScheduleClassCard(item: $0) }
+                        }
+                        .padding(.top, TeamFisSpacing.lg)
+                        .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+                    }
                 }
                 // 접힌 유리 바가 마지막 줄을 덮지 않게 (값의 근거는 토큰 주석에)
                 .padding(.bottom, TeamFisSize.bottomBarClearance)
             }
         }
         .onChange(of: selected) { _, new in month = new }
+    }
+
+    /// 그날이 언제인지 — `9월 8일 화요일`.
+    ///
+    /// 달력 위에 크게 둔다. 주 달력만 있으면 **몇 월인지가 안 보인다** —
+    /// 숫자만 일곱 개 서 있어서다.
+    private var dateTitle: some View {
+        let parts = Calendar.current.dateComponents([.month, .day], from: selected)
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "EEEE"
+        return Text("\(parts.month ?? 0)월 \(parts.day ?? 0)일 \(formatter.string(from: selected))")
+            .font(TeamFisFont.titleLg)
+            .foregroundStyle(TeamFisColor.textPrimary)
+    }
+
+    /// 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 일정을 주면 통째로 걷어낸다.
+    /// 오늘·내일·사흘 뒤에만 수업이 있는 것으로 둔다 — 점이 찍히는 날과 목록이 어긋나면 안 된다.
+    static func hasClass(_ date: Date) -> Bool {
+        let calendar = Calendar.current
+        let today = Date()
+        return [0, 1, 3].contains {
+            guard let day = calendar.date(byAdding: .day, value: $0, to: today) else { return false }
+            return calendar.isDate(day, inSameDayAs: date)
+        }
+    }
+
+    static func classes(on date: Date) -> [ScheduleClass] {
+        guard hasClass(date) else { return [] }
+        return [
+            ScheduleClass(member: "000", time: "오전 10:00 ~ 11:00",
+                          product: "얼리버드 20회", progress: "12/20회차", status: .done),
+            ScheduleClass(member: "000", time: "오후 2:00 ~ 3:00",
+                          product: "PT 30회", progress: "12/30회차", status: .scheduled),
+            ScheduleClass(member: "000", time: "오후 4:00 ~ 5:00",
+                          product: "PT 20회", progress: "3/20회차", status: .scheduled),
+            ScheduleClass(member: "000", time: "오후 6:30 ~ 7:30",
+                          product: "얼리버드 10회", progress: "8/10회차", status: .scheduled),
+        ]
     }
 }
 

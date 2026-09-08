@@ -26,9 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
 import com.teamfis.app.ui.components.ScheduleCalendar
+import com.teamfis.app.ui.components.ScheduleClass
+import com.teamfis.app.ui.components.ScheduleClassCard
+import com.teamfis.app.ui.components.SessionStatus
 import com.teamfis.app.ui.shell.AppHeader
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisMotion
@@ -43,8 +47,10 @@ import com.teamfis.app.ui.theme.TeamFisType
  * 달력은 원래 홈에 있었는데 **일정으로 옮겼다** (2026-09-08 대표 지시).
  * 홈은 다른 화면이 다 찬 뒤에 마지막으로 짠다.
  *
- * **헤더만 고정이고 달력부터 아래는 전부 스크롤한다.**
- * 고른 날의 수업 목록이 아직 없다 — 붙으면 달력 밑에 온다.
+ * **헤더만 고정이고 날짜 제목부터 아래는 전부 스크롤한다.**
+ *
+ * 짜임새는 팀버핏 코치 앱을 참고했다 (2026-09-08 대표 지시) —
+ * 큰 날짜 제목 → 주 달력 → 그날 수업 카드. 값은 TeamFIS 것(PT 1:1)으로 갈았다.
  */
 @Composable
 fun ScheduleScreen(onNotification: () -> Unit = {}) {
@@ -61,6 +67,8 @@ fun ScheduleScreen(onNotification: () -> Unit = {}) {
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = TeamFisSpacing.xxxl),
         ) {
+            DateTitle(selected, Modifier.padding(top = TeamFisSpacing.sm))
+
             ScheduleCalendar(
                 selected = selected,
                 month = month,
@@ -70,16 +78,86 @@ fun ScheduleScreen(onNotification: () -> Unit = {}) {
                     month = it
                 },
                 onMonthChange = { month = it },
-                modifier = Modifier.padding(top = TeamFisSpacing.sm),
+                modifier = Modifier.padding(top = TeamFisSpacing.md),
+                hasClass = ::hasClass,
             )
             CalendarBar(
                 expanded = expanded,
                 onToggle = { expanded = !expanded },
                 modifier = Modifier.padding(top = TeamFisSpacing.xs),
             )
+
+            val classes = remember(selected) { classesOn(selected) }
+            if (classes.isEmpty()) {
+                Text(
+                    "일정이 없어요",
+                    style = TeamFisType.bodySm,
+                    color = TeamFisColor.TextMuted,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = TeamFisSpacing.xxxl),
+                )
+            } else {
+                Column(
+                    modifier = Modifier.padding(
+                        top = TeamFisSpacing.lg,
+                        start = TeamFisSpacing.screenHorizontal,
+                        end = TeamFisSpacing.screenHorizontal,
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
+                ) {
+                    // TODO: 수업 상세가 붙으면 카드를 연결한다
+                    classes.forEach { ScheduleClassCard(it) }
+                }
+            }
         }
     }
 }
+
+/**
+ * 그날이 언제인지 — `9월 8일 화요일`.
+ *
+ * 달력 위에 크게 둔다. 주 달력만 있으면 **몇 월인지가 안 보인다** —
+ * 숫자만 일곱 개 서 있어서다.
+ */
+@Composable
+private fun DateTitle(date: java.time.LocalDate, modifier: Modifier = Modifier) {
+    Text(
+        "${date.monthValue}월 ${date.dayOfMonth}일 ${date.dayOfWeek.koFull}",
+        style = TeamFisType.titleLg,
+        color = TeamFisColor.TextPrimary,
+        modifier = modifier.padding(horizontal = TeamFisSpacing.screenHorizontal),
+    )
+}
+
+private val java.time.DayOfWeek.koFull: String
+    get() = when (this) {
+        java.time.DayOfWeek.MONDAY -> "월요일"
+        java.time.DayOfWeek.TUESDAY -> "화요일"
+        java.time.DayOfWeek.WEDNESDAY -> "수요일"
+        java.time.DayOfWeek.THURSDAY -> "목요일"
+        java.time.DayOfWeek.FRIDAY -> "금요일"
+        java.time.DayOfWeek.SATURDAY -> "토요일"
+        java.time.DayOfWeek.SUNDAY -> "일요일"
+    }
+
+/**
+ * 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 일정을 주면 통째로 걷어낸다.
+ * 오늘·내일·사흘 뒤에만 수업이 있는 것으로 둔다 — 점이 찍히는 날과 목록이 어긋나면 안 된다.
+ */
+private fun hasClass(date: java.time.LocalDate): Boolean {
+    val today = java.time.LocalDate.now()
+    return date == today || date == today.plusDays(1) || date == today.plusDays(3)
+}
+
+private fun classesOn(date: java.time.LocalDate): List<ScheduleClass> =
+    if (!hasClass(date)) emptyList() else listOf(
+        ScheduleClass("000", "오전 10:00 ~ 11:00", "얼리버드 20회", "12/20회차", SessionStatus.Done),
+        ScheduleClass("000", "오후 2:00 ~ 3:00", "PT 30회", "12/30회차", SessionStatus.Scheduled),
+        ScheduleClass("000", "오후 4:00 ~ 5:00", "PT 20회", "3/20회차", SessionStatus.Scheduled),
+        ScheduleClass("000", "오후 6:30 ~ 7:30", "얼리버드 10회", "8/10회차", SessionStatus.Scheduled),
+    )
 
 /**
  * 캘린더 아래 한 줄 — `펼쳐보기`.

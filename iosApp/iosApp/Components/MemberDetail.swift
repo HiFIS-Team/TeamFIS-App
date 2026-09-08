@@ -68,6 +68,15 @@ enum SessionStatus {
         case .noShow: "노쇼"
         }
     }
+
+    /// 목록에서 상태를 훑을 때 쓰는 점 색
+    var dotColor: Color {
+        switch self {
+        case .scheduled: TeamFisColor.scheduled
+        case .done: TeamFisColor.textTertiary
+        case .noShow: TeamFisColor.brand
+        }
+    }
 }
 
 /// 그날 한 운동 부위. 칩에 아이콘과 함께 붙는다.
@@ -303,7 +312,7 @@ private struct SessionButton: View {
 }
 
 /// 상태 배지 — 예정만 초록으로 찬다. 나머지는 지난 일이라 가라앉힌다.
-private struct SessionBadge: View {
+struct SessionBadge: View {
     let status: SessionStatus
 
     private var filled: Bool { status == .scheduled }

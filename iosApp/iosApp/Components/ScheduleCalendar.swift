@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 홈 캘린더 — 헤더 바로 밑.
+/// 일정 캘린더 — 헤더 바로 밑.
 ///
 /// 평소에는 **이번 주 한 줄**, `펼쳐보기` 를 누르면 **그 달 전체**로 늘어난다.
 /// 선택은 하단 탭과 다른 규칙이다 — **브랜드 레드를 쓰지 않는다.**
@@ -12,6 +12,9 @@ struct ScheduleCalendar: View {
     /// 펼쳤을 때 보이는 달 (그 달의 아무 날)
     @Binding var month: Date
     let expanded: Bool
+    /// 그날 수업이 있으면 날짜 밑에 **점**이 찍힌다. 어느 날을 눌러 볼지
+    /// 정하는 값이라 달력이 스스로 알아야 한다
+    var hasClass: (Date) -> Bool = { _ in false }
 
     /// 칸이 터치 타겟(44)보다 커야 하므로 알약 높이가 곧 행 높이다
     private let pillHeight: CGFloat = 68
@@ -74,6 +77,14 @@ struct ScheduleCalendar: View {
                         : TeamFisCalendar.weekendColor(day) ?? TeamFisColor.textSecondary
                 )
                 .frame(width: daySize, height: daySize)
+                // 수업이 있는 날 표시 — 숫자 아래에 얹는다. 줄을 하나 더 두면 칸이 넘친다
+                .overlay(alignment: .bottom) {
+                    if hasClass(day) {
+                        Circle()
+                            .fill(TeamFisColor.textSecondary)
+                            .frame(width: 5, height: 5)
+                    }
+                }
         }
         .frame(maxWidth: .infinity)
         .frame(height: pillHeight)
@@ -170,9 +181,13 @@ struct ScheduleCalendar: View {
                 )
                 .frame(width: daySize, height: daySize)
 
-            // 고른 날은 **동그라미 대신 밑에 점**이다 — 달력이 조용해진다
+            // 고른 날은 **동그라미 대신 밑에 점**이다 — 달력이 조용해진다.
+            // 수업이 있는 날도 같은 점을 쓰되 색이 낮다. 고른 날이 이기는데,
+            // 그 날 수업은 바로 밑에 목록으로 서 있어 표시가 없어도 안 잃는다
             Circle()
-                .fill(isSelected ? TeamFisColor.textPrimary : .clear)
+                .fill(isSelected
+                      ? TeamFisColor.textPrimary
+                      : (hasClass(day) ? TeamFisColor.textSecondary : .clear))
                 .frame(width: 5, height: 5)
         }
         .contentShape(Rectangle())

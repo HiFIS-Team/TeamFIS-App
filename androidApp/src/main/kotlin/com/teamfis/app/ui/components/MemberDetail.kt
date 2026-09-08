@@ -91,6 +91,15 @@ enum class SessionStatus(val label: String) {
     Scheduled("수업예정"),
     Done("수업완료"),
     NoShow("노쇼"),
+    ;
+
+    /** 목록에서 상태를 훑을 때 쓰는 점 색 */
+    val dotColor: Color
+        get() = when (this) {
+            Scheduled -> TeamFisColor.Scheduled
+            Done -> TeamFisColor.TextTertiary
+            NoShow -> TeamFisColor.Brand
+        }
 }
 
 /** 그날 한 운동 부위. 칩에 아이콘과 함께 붙는다. */
@@ -353,7 +362,7 @@ private fun RowScope.SessionButton(
 
 /** 상태 배지 — 예정만 초록으로 찬다. 나머지는 지난 일이라 가라앉힌다. */
 @Composable
-private fun SessionBadge(status: SessionStatus) {
+fun SessionBadge(status: SessionStatus) {
     val filled = status == SessionStatus.Scheduled
     Text(
         status.label,
