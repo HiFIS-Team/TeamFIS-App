@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
 import com.teamfis.app.ui.theme.TeamFisColor
@@ -49,7 +50,15 @@ fun DetailHeader(
         contentAlignment = Alignment.Center,
     ) {
         if (title != null) {
-            Text(title, style = TeamFisType.titleSm, color = TeamFisColor.TextPrimary)
+            Text(
+                title,
+                style = TeamFisType.titleSm,
+                color = TeamFisColor.TextPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                // 이름이 길어도 양쪽 버튼 밑으로 파고들지 않게 자리를 비워 둔다
+                modifier = Modifier.padding(horizontal = TouchTarget),
+            )
         }
 
         HeaderButton(

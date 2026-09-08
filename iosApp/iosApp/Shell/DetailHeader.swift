@@ -20,6 +20,9 @@ struct DetailHeader: View {
                 Text(title)
                     .font(TeamFisFont.titleSm)
                     .foregroundStyle(TeamFisColor.textPrimary)
+                    .lineLimit(1)
+                    // 이름이 길어도 양쪽 버튼 밑으로 파고들지 않게 자리를 비워 둔다
+                    .padding(.horizontal, Header.touchTarget)
             }
 
             HStack(spacing: 0) {
