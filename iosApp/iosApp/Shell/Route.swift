@@ -7,6 +7,8 @@ import SwiftUI
 enum Route: Hashable {
     /// 회원 상세 — 회원 목록의 한 줄을 누르면 들어온다
     case memberDetail(Member)
+    /// 수업 상세 — 일정의 수업 카드를 누르면 들어온다
+    case scheduleDetail(ScheduleClass)
     /// 알림함 — 헤더의 종을 누르면 들어온다
     case notifications
     /// 회원 등록 — 회원 목록의 `+` 로 들어온다

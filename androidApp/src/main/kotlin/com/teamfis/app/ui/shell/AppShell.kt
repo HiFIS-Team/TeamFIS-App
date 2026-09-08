@@ -24,9 +24,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.teamfis.app.ui.components.Member
+import com.teamfis.app.ui.components.ScheduleClass
 import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberRegisterScreen
 import com.teamfis.app.ui.screens.MemberScreen
+import com.teamfis.app.ui.screens.ScheduleDetailScreen
 import com.teamfis.app.ui.screens.ScheduleScreen
 import com.teamfis.app.ui.screens.NotificationScreen
 import com.teamfis.app.ui.screens.MemberPickScreen
@@ -47,6 +49,8 @@ fun AppShell() {
     val nav = rememberNavController()
     // 상세로 넘길 회원. NavHost 인자로 객체를 실어 보낼 수 없어 셸이 들고 있는다
     var openedMember by remember { mutableStateOf<Member?>(null) }
+    // 상세로 넘길 수업. 회원과 같은 이유로 셸이 들고 있는다
+    var openedClass by remember { mutableStateOf<ScheduleClass?>(null) }
     // 등록 화면이 고른 회원들 — 고르는 잎이 등록 잎 위에 또 얹히므로 셸이 들고 있는다
     var registerReferrer by remember { mutableStateOf<Member?>(null) }
     var registerRenewMember by remember { mutableStateOf<Member?>(null) }
@@ -68,6 +72,10 @@ fun AppShell() {
                     openedMember = it
                     nav.navigateOnce(Route.MEMBER_DETAIL)
                 },
+                onClass = {
+                    openedClass = it
+                    nav.navigateOnce(Route.SCHEDULE_DETAIL)
+                },
                 onNotification = { nav.navigateOnce(Route.NOTIFICATIONS) },
                 onAddMember = {
                     // 지난번에 고른 회원이 남아 있으면 안 된다
@@ -76,6 +84,12 @@ fun AppShell() {
                     nav.navigateOnce(Route.MEMBER_REGISTER)
                 },
             )
+        }
+        composable(Route.SCHEDULE_DETAIL) {
+            // 뒤로 간 직후 한 프레임 동안 null 이 될 수 있어 방어한다
+            openedClass?.let {
+                ScheduleDetailScreen(item = it, onBack = { nav.popBackStack() })
+            }
         }
         composable(Route.NOTIFICATIONS) {
             NotificationScreen(onBack = { nav.popBackStack() })
@@ -134,6 +148,7 @@ fun AppShell() {
 @Composable
 private fun TabShell(
     onMember: (Member) -> Unit,
+    onClass: (ScheduleClass) -> Unit,
     onNotification: () -> Unit,
     onAddMember: () -> Unit,
 ) {
@@ -151,7 +166,10 @@ private fun TabShell(
                 .padding(inner),
         ) {
             when (selected) {
-                BottomTab.Schedule -> ScheduleScreen(onNotification = onNotification)
+                BottomTab.Schedule -> ScheduleScreen(
+                    onClass = onClass,
+                    onNotification = onNotification,
+                )
                 BottomTab.Member -> MemberScreen(
                     onMember = onMember,
                     onNotification = onNotification,

@@ -1,16 +1,49 @@
 import SwiftUI
 
 /// 일정에 서는 수업 한 건.
-struct ScheduleClass: Identifiable {
+///
+/// **시각을 글자가 아니라 값으로 들고 있다** — 상세에서 날짜·시간을 고칠 수 있어야 해서다.
+/// 카드가 읽는 `time` 은 그 값에서 나온다.
+struct ScheduleClass: Identifiable, Hashable {
     let id = UUID()
     let member: String
-    /// `오후 2:00 ~ 3:00`
-    let time: String
+    /// 수업 시작 시각
+    let at: Date
+    /// 수업 길이(분) — 시작을 옮기면 끝도 따라 움직인다
+    let minutes: Int
     /// 등록 상품 — `얼리버드 20회`
     let product: String
     /// `12/30회차`
     let progress: String
     let status: SessionStatus
+
+    /// `오후 2:00 ~ 3:00`
+    var time: String { timeRange(at, minutes) }
+}
+
+/// `오후 2:00 ~ 3:00`.
+///
+/// 끝 시각에는 오전·오후를 **넘어갈 때만** 붙인다. 한 줄 안에서 같은 말을 두 번 하면
+/// 정작 다른 쪽인 시각이 안 보인다.
+func timeRange(_ at: Date, _ minutes: Int) -> String {
+    let calendar = Calendar.current
+    let end = calendar.date(byAdding: .minute, value: minutes, to: at) ?? at
+    let sameHalf = (calendar.component(.hour, from: at) < 12)
+        == (calendar.component(.hour, from: end) < 12)
+    return "\(ampmTime(at)) ~ \(sameHalf ? clockTime(end) : ampmTime(end))"
+}
+
+/// `오후 2:00`
+func ampmTime(_ at: Date) -> String {
+    let hour = Calendar.current.component(.hour, from: at)
+    return "\(hour < 12 ? "오전" : "오후") \(clockTime(at))"
+}
+
+/// `2:00` — 12시간제. 0 시와 12 시는 둘 다 `12` 다
+func clockTime(_ at: Date) -> String {
+    let parts = Calendar.current.dateComponents([.hour, .minute], from: at)
+    let hour = (parts.hour ?? 0) % 12
+    return String(format: "%d:%02d", hour == 0 ? 12 : hour, parts.minute ?? 0)
 }
 
 /// 일정의 수업 카드.

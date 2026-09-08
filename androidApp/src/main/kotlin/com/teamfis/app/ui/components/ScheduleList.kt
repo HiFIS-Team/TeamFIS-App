@@ -23,18 +23,51 @@ import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisRadius
 import com.teamfis.app.ui.theme.TeamFisSpacing
 import com.teamfis.app.ui.theme.TeamFisType
+import java.time.LocalDateTime
 
-/** 일정에 서는 수업 한 건. */
+/**
+ * 일정에 서는 수업 한 건.
+ *
+ * **시각을 글자가 아니라 값으로 들고 있다** — 상세에서 날짜·시간을 고칠 수 있어야 해서다.
+ * 카드가 읽는 [time] 은 그 값에서 나온다.
+ */
 data class ScheduleClass(
     val member: String,
-    /** `오후 2:00 ~ 3:00` */
-    val time: String,
+    /** 수업 시작 시각 */
+    val at: LocalDateTime,
+    /** 수업 길이(분) — 시작을 옮기면 끝도 따라 움직인다 */
+    val minutes: Int,
     /** 등록 상품 — `얼리버드 20회` */
     val product: String,
     /** `12/30회차` */
     val progress: String,
     val status: SessionStatus,
-)
+) {
+    /** `오후 2:00 ~ 3:00` */
+    val time: String get() = timeRange(at, minutes)
+}
+
+/**
+ * `오후 2:00 ~ 3:00`.
+ *
+ * 끝 시각에는 오전·오후를 **넘어갈 때만** 붙인다. 한 줄 안에서 같은 말을 두 번 하면
+ * 정작 다른 쪽인 시각이 안 보인다.
+ */
+fun timeRange(at: LocalDateTime, minutes: Int): String {
+    val end = at.plusMinutes(minutes.toLong())
+    val sameHalf = (at.hour < 12) == (end.hour < 12)
+    return "${ampmTime(at)} ~ ${if (sameHalf) clockTime(end) else ampmTime(end)}"
+}
+
+/** `오후 2:00` */
+fun ampmTime(at: LocalDateTime): String =
+    "${if (at.hour < 12) "오전" else "오후"} ${clockTime(at)}"
+
+/** `2:00` — 12시간제. 0 시와 12 시는 둘 다 `12` 다 */
+fun clockTime(at: LocalDateTime): String {
+    val hour = at.hour % 12
+    return "${if (hour == 0) 12 else hour}:%02d".format(at.minute)
+}
 
 /**
  * 일정의 수업 카드.

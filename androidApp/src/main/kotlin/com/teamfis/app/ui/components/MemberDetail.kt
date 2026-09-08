@@ -338,9 +338,13 @@ fun SessionCard(
     }
 }
 
-/** 회차 처리 버튼 — 둘이 **같은 폭**이다. 하나가 넓으면 그쪽이 정답처럼 보인다. */
+/**
+ * 회차 처리 버튼 — 둘이 **같은 폭**이다. 하나가 넓으면 그쪽이 정답처럼 보인다.
+ *
+ * 수업 상세도 같은 버튼을 쓴다. 같은 일을 하는 버튼이 두 모양이면 안 된다.
+ */
 @Composable
-private fun RowScope.SessionButton(
+fun RowScope.SessionButton(
     label: String,
     background: Color,
     contentColor: Color,

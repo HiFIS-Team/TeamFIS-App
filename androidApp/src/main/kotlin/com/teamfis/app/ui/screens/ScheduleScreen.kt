@@ -53,7 +53,10 @@ import com.teamfis.app.ui.theme.TeamFisType
  * 큰 날짜 제목 → 주 달력 → 그날 수업 카드. 값은 TeamFIS 것(PT 1:1)으로 갈았다.
  */
 @Composable
-fun ScheduleScreen(onNotification: () -> Unit = {}) {
+fun ScheduleScreen(
+    onClass: (ScheduleClass) -> Unit = {},
+    onNotification: () -> Unit = {},
+) {
     var selected by remember { mutableStateOf(java.time.LocalDate.now()) }
     var month by remember { mutableStateOf(java.time.LocalDate.now()) }
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -105,8 +108,9 @@ fun ScheduleScreen(onNotification: () -> Unit = {}) {
                     ),
                     verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
                 ) {
-                    // TODO: 수업 상세가 붙으면 카드를 연결한다
-                    classes.forEach { ScheduleClassCard(it) }
+                    classes.forEach { item ->
+                        ScheduleClassCard(item, onClick = { onClass(item) })
+                    }
                 }
             }
         }
@@ -124,10 +128,10 @@ private fun hasClass(date: java.time.LocalDate): Boolean {
 
 private fun classesOn(date: java.time.LocalDate): List<ScheduleClass> =
     if (!hasClass(date)) emptyList() else listOf(
-        ScheduleClass("000", "오전 10:00 ~ 11:00", "얼리버드 20회", "12/20회차", SessionStatus.Done),
-        ScheduleClass("000", "오후 2:00 ~ 3:00", "PT 30회", "12/30회차", SessionStatus.Scheduled),
-        ScheduleClass("000", "오후 4:00 ~ 5:00", "PT 20회", "3/20회차", SessionStatus.Scheduled),
-        ScheduleClass("000", "오후 6:30 ~ 7:30", "얼리버드 10회", "8/10회차", SessionStatus.Scheduled),
+        ScheduleClass("000", date.atTime(10, 0), 60, "얼리버드 20회", "12/20회차", SessionStatus.Done),
+        ScheduleClass("000", date.atTime(14, 0), 60, "PT 30회", "12/30회차", SessionStatus.Scheduled),
+        ScheduleClass("000", date.atTime(16, 0), 60, "PT 20회", "3/20회차", SessionStatus.Scheduled),
+        ScheduleClass("000", date.atTime(18, 30), 60, "얼리버드 10회", "8/10회차", SessionStatus.Scheduled),
     )
 
 /**

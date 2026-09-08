@@ -386,8 +386,10 @@ private val weekdayOrder = listOf(
 /**
  * 기기 로케일을 따르지 않고 우리가 정한다 — 한국어 전용 앱이고,
  * 요일 한 글자는 폭이 일정해야 칸이 흔들리지 않는다.
+ *
+ * 수업 상세도 같은 표기를 써야 해서 파일 밖으로 연다.
  */
-private val DayOfWeek.koLabel: String
+val DayOfWeek.koLabel: String
     get() = when (this) {
         DayOfWeek.MONDAY -> "월"
         DayOfWeek.TUESDAY -> "화"

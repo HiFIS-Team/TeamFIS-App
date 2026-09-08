@@ -12,6 +12,7 @@ import SwiftUI
 /// 짜임새는 팀버핏 코치 앱을 참고했다 (2026-09-08 대표 지시) —
 /// 큰 날짜 제목 → 주 달력 → 그날 수업 카드. 값은 TeamFIS 것(PT 1:1)으로 갈았다.
 struct ScheduleScreen: View {
+    var onClass: (ScheduleClass) -> Void = { _ in }
     var onNotification: () -> Void = {}
 
     @State private var selected = Date()
@@ -46,8 +47,9 @@ struct ScheduleScreen: View {
                             .padding(.top, TeamFisSpacing.xxxl)
                     } else {
                         VStack(spacing: TeamFisSpacing.md) {
-                            // TODO: 수업 상세가 붙으면 카드를 연결한다
-                            ForEach(classes) { ScheduleClassCard(item: $0) }
+                            ForEach(classes) { item in
+                                ScheduleClassCard(item: item, onSelect: { onClass(item) })
+                            }
                         }
                         .padding(.top, TeamFisSpacing.lg)
                         .padding(.horizontal, TeamFisSpacing.screenHorizontal)
@@ -74,15 +76,21 @@ struct ScheduleScreen: View {
     static func classes(on date: Date) -> [ScheduleClass] {
         guard hasClass(date) else { return [] }
         return [
-            ScheduleClass(member: "000", time: "오전 10:00 ~ 11:00",
+            ScheduleClass(member: "000", at: at(date, 10, 0), minutes: 60,
                           product: "얼리버드 20회", progress: "12/20회차", status: .done),
-            ScheduleClass(member: "000", time: "오후 2:00 ~ 3:00",
+            ScheduleClass(member: "000", at: at(date, 14, 0), minutes: 60,
                           product: "PT 30회", progress: "12/30회차", status: .scheduled),
-            ScheduleClass(member: "000", time: "오후 4:00 ~ 5:00",
+            ScheduleClass(member: "000", at: at(date, 16, 0), minutes: 60,
                           product: "PT 20회", progress: "3/20회차", status: .scheduled),
-            ScheduleClass(member: "000", time: "오후 6:30 ~ 7:30",
+            ScheduleClass(member: "000", at: at(date, 18, 30), minutes: 60,
                           product: "얼리버드 10회", progress: "8/10회차", status: .scheduled),
         ]
+    }
+
+    private static func at(_ date: Date, _ hour: Int, _ minute: Int) -> Date {
+        TeamFisCalendar.calendar.date(
+            bySettingHour: hour, minute: minute, second: 0, of: date
+        ) ?? date
     }
 }
 

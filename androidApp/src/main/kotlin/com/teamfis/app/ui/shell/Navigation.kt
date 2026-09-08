@@ -14,6 +14,9 @@ object Route {
     /** 회원 상세 — 회원 목록의 한 줄을 누르면 들어온다 */
     const val MEMBER_DETAIL = "member_detail"
 
+    /** 수업 상세 — 일정의 수업 카드를 누르면 들어온다 */
+    const val SCHEDULE_DETAIL = "schedule_detail"
+
     /** 알림함 — 헤더의 종을 누르면 들어온다 */
     const val NOTIFICATIONS = "notifications"
 
