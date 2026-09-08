@@ -74,12 +74,15 @@ struct ScheduleDetailScreen: View {
                     .padding(.top, TeamFisSpacing.lg)
                     .padding(.horizontal, TeamFisSpacing.screenHorizontal)
 
-                    // 끝난 수업에만 온다. 예정이면 아직 쓸 것이 없고, 노쇼는 한 게 없다
-                    if let log {
+                    // **두 카드는 상태와 상관없이 늘 선다** (2026-09-08 대표 지시).
+                    // 채워질 자리를 미리 보여 주는 것이라 아직 없으면 값만 비운다
+                    VStack(spacing: TeamFisSpacing.md) {
                         ScheduleLogBlock(log: log)
-                            .padding(.top, TeamFisSpacing.xl)
-                            .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+                        // 사인은 수업을 끝내야 받는다 — 예정에도 노쇼에도 없다
+                        ScheduleSignBlock(signed: item.status == .done)
                     }
+                    .padding(.top, TeamFisSpacing.xl)
+                    .padding(.horizontal, TeamFisSpacing.screenHorizontal)
                 }
                 .padding(.bottom, TeamFisSpacing.xxxl)
             }

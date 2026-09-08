@@ -42,6 +42,7 @@ import com.teamfis.app.ui.components.PickerField
 import com.teamfis.app.ui.components.ScheduleClass
 import com.teamfis.app.ui.components.ScheduleLog
 import com.teamfis.app.ui.components.ScheduleLogBlock
+import com.teamfis.app.ui.components.ScheduleSignBlock
 import com.teamfis.app.ui.components.SessionBadge
 import com.teamfis.app.ui.components.SessionButton
 import com.teamfis.app.ui.components.SessionStatus
@@ -160,16 +161,19 @@ fun ScheduleDetailScreen(item: ScheduleClass, onBack: () -> Unit) {
                 )
             }
 
-            // 끝난 수업에만 온다. 예정이면 아직 쓸 것이 없고, 노쇼는 한 게 없다
-            log?.let {
-                ScheduleLogBlock(
-                    it,
-                    modifier = Modifier.padding(
-                        top = TeamFisSpacing.xl,
-                        start = TeamFisSpacing.screenHorizontal,
-                        end = TeamFisSpacing.screenHorizontal,
-                    ),
-                )
+            // **두 카드는 상태와 상관없이 늘 선다** (2026-09-08 대표 지시).
+            // 채워질 자리를 미리 보여 주는 것이라 아직 없으면 값만 비운다
+            Column(
+                modifier = Modifier.padding(
+                    top = TeamFisSpacing.xl,
+                    start = TeamFisSpacing.screenHorizontal,
+                    end = TeamFisSpacing.screenHorizontal,
+                ),
+                verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
+            ) {
+                ScheduleLogBlock(log)
+                // 사인은 수업을 끝내야 받는다 — 예정에도 노쇼에도 없다
+                ScheduleSignBlock(signed = item.status == SessionStatus.Done)
             }
 
             Spacer(Modifier.height(TeamFisSpacing.xxxl))
