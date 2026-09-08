@@ -13,7 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -31,15 +37,19 @@ import com.teamfis.app.ui.components.CardioRowFields
 import com.teamfis.app.ui.components.ClassTodo
 import com.teamfis.app.ui.components.FieldLabel
 import com.teamfis.app.ui.components.FormField
+import com.teamfis.app.ui.components.PickerField
 import com.teamfis.app.ui.components.TableBox
 import com.teamfis.app.ui.components.WeightEntry
 import com.teamfis.app.ui.components.WeightRowFields
 import com.teamfis.app.ui.components.ampmTime
+import com.teamfis.app.ui.components.dayLabel
 import com.teamfis.app.ui.components.dayTitle
 import com.teamfis.app.ui.shell.DetailHeader
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisSpacing
 import com.teamfis.app.ui.theme.TeamFisType
+import java.time.Instant
+import java.time.ZoneId
 
 /**
  * 일지 작성 — 수업 탭의 일지 목록에서 한 건을 눌렀을 때.
@@ -47,19 +57,22 @@ import com.teamfis.app.ui.theme.TeamFisType
  * **HiFIS 의 운동 일지 서식을 가져왔다** (2026-09-08 대표 지시) — 수업 내용 ·
  * 웨이트 표 · 유산소 표 · 피드백. 생김새만 TeamFIS 것으로 갈았다.
  *
- * **가져오면서 뺀 것이 둘이다.**
- * - `수업 날짜` — 거기는 일지를 따로 쓰지만 여기는 **수업에서 들어온다.** 날짜가
- *   이미 정해져 있어서 다시 받으면 두 벌이 된다 (머리에 이미 서 있다)
- * - `사진 · 영상` — 올릴 곳이 아직 없다
+ * `수업 날짜` 는 **수업에서 이미 정해져 온다.** 그래도 칸을 두는 것은 잘못 잡힌 날에
+ * 수업한 것을 여기서 바로잡을 수 있어야 해서다 (2026-09-08 대표 지시로 되살렸다).
+ *
+ * **아직 못 가져온 것은 `사진 · 영상` 하나다** — 올릴 곳이 없다.
  *
  * 머리 모양은 세션 사인 화면과 같다 — 형제 화면이라 나란해야 한다.
  *
  * **잎 화면이다** — 셸의 `NavHost` 가 오른쪽에서 밀어 넣어 하단 탭 바까지 덮는다.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClassLogScreen(todo: ClassTodo, onBack: () -> Unit) {
     var title by remember(todo) { mutableStateOf("") }
     var feedback by remember(todo) { mutableStateOf("") }
+    var at by remember(todo) { mutableStateOf(todo.item.at.toLocalDate()) }
+    var datePickerOpen by remember { mutableStateOf(false) }
 
     // 처음부터 빈 줄 하나씩 둔다 — 누르지 않아도 바로 적는다 (HiFIS 와 같은 규칙)
     val weights = remember(todo) { mutableStateListOf(WeightEntry()) }
@@ -113,6 +126,15 @@ fun ClassLogScreen(todo: ClassTodo, onBack: () -> Unit) {
                 value = title,
                 onValueChange = { title = it },
                 hint = "예) 가슴, 삼두",
+            )
+
+            Spacer(Modifier.height(TeamFisSpacing.xl))
+
+            FieldLabel("수업 날짜")
+            PickerField(
+                label = "수업 날짜",
+                value = dayLabel(at),
+                onTap = { datePickerOpen = true },
             )
 
             Spacer(Modifier.height(TeamFisSpacing.xl))
@@ -192,6 +214,34 @@ fun ClassLogScreen(todo: ClassTodo, onBack: () -> Unit) {
         }
     }
 
+    if (datePickerOpen) {
+        // 앞날은 못 고른다 — 이미 한 수업을 적는 자리다
+        val state = rememberDatePickerState(
+            initialSelectedDateMillis = at
+                .atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            selectableDates = LogPastOnly,
+        )
+        DatePickerDialog(
+            onDismissRequest = { datePickerOpen = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let {
+                        at = Instant.ofEpochMilli(it)
+                            .atZone(ZoneId.systemDefault()).toLocalDate()
+                    }
+                    datePickerOpen = false
+                }) { Text("고르기", color = TeamFisColor.Brand) }
+            },
+            dismissButton = {
+                TextButton(onClick = { datePickerOpen = false }) {
+                    Text("취소", color = TeamFisColor.TextSecondary)
+                }
+            },
+        ) {
+            DatePicker(state = state)
+        }
+    }
+
     if (partRow >= 0) {
         val row = partRow
         BodyPartDialog(
@@ -203,4 +253,11 @@ fun ClassLogScreen(todo: ClassTodo, onBack: () -> Unit) {
             onDismiss = { partRow = -1 },
         )
     }
+}
+
+/** 앞날은 못 고른다 — 이미 한 수업을 적는 자리다 (등록 화면의 `PastOnly` 와 같은 뜻). */
+@OptIn(ExperimentalMaterial3Api::class)
+private object LogPastOnly : SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long) =
+        utcTimeMillis <= System.currentTimeMillis()
 }

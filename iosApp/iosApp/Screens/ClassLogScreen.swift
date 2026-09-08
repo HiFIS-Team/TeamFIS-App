@@ -5,10 +5,10 @@ import SwiftUI
 /// **HiFIS 의 운동 일지 서식을 가져왔다** (2026-09-08 대표 지시) — 수업 내용 ·
 /// 웨이트 표 · 유산소 표 · 피드백. 생김새만 TeamFIS 것으로 갈았다.
 ///
-/// **가져오면서 뺀 것이 둘이다.**
-/// - `수업 날짜` — 거기는 일지를 따로 쓰지만 여기는 **수업에서 들어온다.** 날짜가
-///   이미 정해져 있어서 다시 받으면 두 벌이 된다 (머리에 이미 서 있다)
-/// - `사진 · 영상` — 올릴 곳이 아직 없다
+/// `수업 날짜` 는 **수업에서 이미 정해져 온다.** 그래도 칸을 두는 것은 잘못 잡힌 날에
+/// 수업한 것을 여기서 바로잡을 수 있어야 해서다 (2026-09-08 대표 지시로 되살렸다).
+///
+/// **아직 못 가져온 것은 `사진 · 영상` 하나다** — 올릴 곳이 없다.
 ///
 /// 머리 모양은 세션 사인 화면과 같다 — 형제 화면이라 나란해야 한다.
 ///
@@ -19,6 +19,8 @@ struct ClassLogScreen: View {
 
     @State private var title = ""
     @State private var feedback = ""
+    @State private var at: Date
+    @State private var datePickerOpen = false
 
     /// 처음부터 빈 줄 하나씩 둔다 — 누르지 않아도 바로 적는다 (HiFIS 와 같은 규칙)
     @State private var weights: [WeightEntry] = [WeightEntry()]
@@ -26,6 +28,12 @@ struct ClassLogScreen: View {
 
     /// 부위 고르개를 띄운 줄. 없으면 안 뜬다
     @State private var partRow: Int?
+
+    init(todo: ClassTodo, onBack: @escaping () -> Void) {
+        self.todo = todo
+        self.onBack = onBack
+        _at = State(initialValue: todo.item.at)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -51,6 +59,10 @@ struct ClassLogScreen: View {
                     FieldLabel("수업 내용")
                         .padding(.top, TeamFisSpacing.xl)
                     FormField(text: $title, hint: "예) 가슴, 삼두")
+
+                    FieldLabel("수업 날짜")
+                        .padding(.top, TeamFisSpacing.xl)
+                    PickerField(label: "수업 날짜", value: dayLabel(at)) { datePickerOpen = true }
 
                     FieldLabel("웨이트 운동")
                         .padding(.top, TeamFisSpacing.xl)
@@ -117,6 +129,14 @@ struct ClassLogScreen: View {
             )
             .padding(.horizontal, TeamFisSpacing.screenHorizontal)
             .padding(.vertical, TeamFisSpacing.md)
+        }
+        .sheet(isPresented: $datePickerOpen) {
+            // 앞날은 못 고른다 — 이미 한 수업을 적는 자리다
+            DatePicker("수업 날짜", selection: $at, in: ...Date(), displayedComponents: .date)
+                .datePickerStyle(.graphical)
+                .tint(TeamFisColor.brand)
+                .padding()
+                .presentationDetents([.medium])
         }
         .sheet(item: Binding(get: { partRow.map(RowIndex.init) }, set: { partRow = $0?.value })) { row in
             BodyPartPicker(

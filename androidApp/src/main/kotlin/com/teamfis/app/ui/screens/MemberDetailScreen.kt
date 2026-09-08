@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,8 +23,15 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
+import com.teamfis.app.ui.components.AddInlineButton
 import com.teamfis.app.ui.components.BodyPart
 import com.teamfis.app.ui.components.DetailInfoRow
+import com.teamfis.app.ui.components.MemberGoalList
+import com.teamfis.app.ui.components.MemberSectionHeader
+import com.teamfis.app.ui.components.Supplement
+import com.teamfis.app.ui.components.SupplementEditDialog
+import com.teamfis.app.ui.components.SupplementList
+import com.teamfis.app.ui.components.SupplementPickerDialog
 import com.teamfis.app.ui.components.comma
 import com.teamfis.app.ui.components.Member
 import com.teamfis.app.ui.components.MemberDetail
@@ -54,6 +63,14 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
     val detail = remember(member) { placeholderDetail(member) }
     var productIndex by remember { mutableIntStateOf(0) }
     var productExpanded by remember { mutableStateOf(false) }
+
+    // 운동을 하는 이유 · 영양제 — 사람에 붙는 값이라 회차가 아니라 여기 산다.
+    // TODO(서버): 회원 상세 API 가 붙으면 받아 오고 고칠 때마다 보낸다
+    val goals = remember(member) { mutableStateListOf("") }
+    val supplements = remember(member) { mutableStateListOf<Supplement>() }
+    var pickingSupplement by remember { mutableStateOf(false) }
+    // 고치는 중인 영양제. 새로 담는 중이면 -1 이 아니라 `editing` 이 가른다
+    var editingSupplement by remember { mutableStateOf<Pair<Int, Supplement>?>(null) }
 
     Column(
         Modifier
@@ -122,13 +139,75 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
                     top = TeamFisSpacing.xl,
                     start = TeamFisSpacing.screenHorizontal,
                     end = TeamFisSpacing.screenHorizontal,
-                    bottom = TeamFisSpacing.xxxl,
                 ),
                 verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
             ) {
                 product.sessions.forEach { session -> SessionCard(session) }
             }
+
+            // 회차 밑에 **사람에 붙는 값** 둘이 온다 (HiFIS 와 같은 자리).
+            // 등록권·회차는 등록권마다 갈리지만 이 둘은 회원 하나에 하나다
+            Column(
+                modifier = Modifier.padding(
+                    top = TeamFisSpacing.xxxl,
+                    start = TeamFisSpacing.screenHorizontal,
+                    end = TeamFisSpacing.screenHorizontal,
+                    bottom = TeamFisSpacing.xxxl,
+                ),
+            ) {
+                MemberSectionHeader("운동을 하는 이유")
+                MemberGoalList(
+                    goals = goals,
+                    onChange = { index, text -> goals[index] = text },
+                    onAdd = { goals.add("") },
+                    onRemove = {
+                        // 마지막 한 줄은 비우기만 한다 — 판이 통째로 사라지면
+                        // 다시 어디를 눌러야 할지 알 수 없다 (일지 표와 같은 규칙)
+                        if (goals.size > 1) goals.removeAt(it) else goals[0] = ""
+                    },
+                )
+
+                MemberSectionHeader(
+                    "영양제",
+                    modifier = Modifier.padding(top = TeamFisSpacing.xxxl),
+                )
+                SupplementList(
+                    supplements = supplements,
+                    onEdit = { editingSupplement = it to supplements[it] },
+                    onAdd = { pickingSupplement = true },
+                )
+            }
         }
+    }
+
+    if (pickingSupplement) {
+        SupplementPickerDialog(
+            onPick = {
+                supplements.add(it)
+                pickingSupplement = false
+            },
+            onWriteMyself = {
+                pickingSupplement = false
+                editingSupplement = -1 to Supplement(name = "")
+            },
+            onDismiss = { pickingSupplement = false },
+        )
+    }
+
+    editingSupplement?.let { (index, row) ->
+        SupplementEditDialog(
+            initial = row,
+            editing = index >= 0,
+            onSave = {
+                if (index >= 0) supplements[index] = it else supplements.add(it)
+                editingSupplement = null
+            },
+            onDelete = {
+                if (index >= 0) supplements.removeAt(index)
+                editingSupplement = null
+            },
+            onDismiss = { editingSupplement = null },
+        )
     }
 }
 
