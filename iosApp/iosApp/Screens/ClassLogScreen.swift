@@ -62,18 +62,20 @@ struct ClassLogScreen: View {
                                 number: index + 1,
                                 onPickPart: { partRow = index },
                                 onRemove: {
-                                    // 마지막 한 줄은 비우기만 한다 — 표가 통째로 사라지면
-                                    // 다시 어디를 눌러야 할지 알 수 없다
-                                    if weights.count > 1 {
-                                        weights.remove(at: index)
-                                    } else {
-                                        weights[0] = WeightEntry()
+                                    snap {
+                                        // 마지막 한 줄은 비우기만 한다 — 표가 통째로
+                                        // 사라지면 다시 어디를 눌러야 할지 알 수 없다
+                                        if weights.count > 1 {
+                                            weights.remove(at: index)
+                                        } else {
+                                            weights[0] = WeightEntry()
+                                        }
                                     }
                                 }
                             )
                         }
                     }
-                    AddRowButton(label: "운동 추가") { weights.append(WeightEntry()) }
+                    AddRowButton(label: "운동 추가") { snap { weights.append(WeightEntry()) } }
                         .padding(.top, TeamFisSpacing.sm)
 
                     FieldLabel("유산소 운동")
@@ -84,16 +86,18 @@ struct ClassLogScreen: View {
                             CardioRowFields(
                                 entry: $cardio[index],
                                 onRemove: {
-                                    if cardio.count > 1 {
-                                        cardio.remove(at: index)
-                                    } else {
-                                        cardio[0] = CardioEntry()
+                                    snap {
+                                        if cardio.count > 1 {
+                                            cardio.remove(at: index)
+                                        } else {
+                                            cardio[0] = CardioEntry()
+                                        }
                                     }
                                 }
                             )
                         }
                     }
-                    AddRowButton(label: "유산소 추가") { cardio.append(CardioEntry()) }
+                    AddRowButton(label: "유산소 추가") { snap { cardio.append(CardioEntry()) } }
                         .padding(.top, TeamFisSpacing.sm)
 
                     FieldLabel("피드백")
@@ -125,6 +129,16 @@ struct ClassLogScreen: View {
             )
         }
     }
+}
+
+/// 표 줄을 더하고 뺄 때는 **애니메이션을 끈다** (2026-09-08 대표 지시).
+///
+/// 안드로이드는 그냥 생기는데 여기만 새 줄이 천천히 미끄러져 내려왔다.
+/// 값을 적는 표라 줄이 제자리에 바로 서야 다음 칸을 누를 수 있다.
+private func snap(_ change: () -> Void) {
+    var transaction = Transaction()
+    transaction.disablesAnimations = true
+    withTransaction(transaction, change)
 }
 
 /// `.sheet(item:)` 은 `Identifiable` 을 받는다 — 줄 번호를 담아 넘긴다

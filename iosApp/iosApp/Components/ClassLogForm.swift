@@ -95,6 +95,10 @@ struct TableBox<Content: View>: View {
 }
 
 /// `+ 운동 추가` — 표 밑에 붙는 줄.
+///
+/// **테두리가 아니라 면으로 찬다** (2026-09-08 대표 지시). 선은 `divider`(흰색 10%)라
+/// 검은 바탕에서 거의 안 보였다. 이 앱에 아웃라인 버튼은 여기 하나뿐이었고 나머지는
+/// 전부 면이라, 눌리는 칸들과 같은 `surface2` 로 맞춘다.
 struct AddRowButton: View {
     let label: String
     let action: () -> Void
@@ -112,9 +116,9 @@ struct AddRowButton: View {
             .foregroundStyle(TeamFisColor.textSecondary)
             .frame(maxWidth: .infinity)
             .frame(height: TeamFisSize.minTouchTarget)
-            .overlay(
+            .background(
                 RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
-                    .stroke(TeamFisColor.divider, lineWidth: 1)
+                    .fill(TeamFisColor.surface2)
             )
             .contentShape(Rectangle())
         }

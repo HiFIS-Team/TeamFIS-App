@@ -1,7 +1,6 @@
 package com.teamfis.app.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -163,7 +162,13 @@ fun TableBox(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     }
 }
 
-/** `+ 운동 추가` — 표 밑에 붙는 줄. */
+/**
+ * `+ 운동 추가` — 표 밑에 붙는 줄.
+ *
+ * **테두리가 아니라 면으로 찬다** (2026-09-08 대표 지시). 선은 `Divider`(흰색 10%)라
+ * 검은 바탕에서 거의 안 보였다. 이 앱에 아웃라인 버튼은 여기 하나뿐이었고 나머지는
+ * 전부 면이라, 눌리는 칸들과 같은 `Surface2` 로 맞춘다.
+ */
 @Composable
 fun AddRowButton(label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val interaction = remember { MutableInteractionSource() }
@@ -172,7 +177,7 @@ fun AddRowButton(label: String, onClick: () -> Unit, modifier: Modifier = Modifi
             .fillMaxWidth()
             .height(TeamFisSize.minTouchTarget)
             .clip(TeamFisRadius.card)
-            .border(1.dp, TeamFisColor.Divider, TeamFisRadius.card)
+            .background(TeamFisColor.Surface2)
             .clickable(interactionSource = interaction, indication = null, onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
