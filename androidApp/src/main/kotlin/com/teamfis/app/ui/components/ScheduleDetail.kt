@@ -1,5 +1,6 @@
 package com.teamfis.app.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.teamfis.app.ui.theme.TeamFisColor
+import com.teamfis.app.ui.theme.TeamFisRadius
 import com.teamfis.app.ui.theme.TeamFisSpacing
 import com.teamfis.app.ui.theme.TeamFisType
 import java.time.LocalDate
@@ -24,15 +26,23 @@ data class ScheduleLog(
 )
 
 /**
- * 일지 조회 블록 — 운동 부위 칩 + 메모.
+ * 일지 카드 — 운동 부위 칩 + 메모.
  *
- * 회원 상세의 회차 카드가 부위만 보여 주는 것과 달리 **메모까지 편다.**
- * 거기는 회차를 훑는 목록이고 여기는 수업 하나만 있는 화면이라 접을 이유가 없다.
+ * **회원 상세의 회차 카드와 같은 판이다** (2026-09-08 대표 지시) — 같은 결의 내용이
+ * 한 화면에서는 카드고 다른 화면에서는 맨바닥이면 안 읽힌다.
+ *
+ * 회차 카드가 부위만 보여 주는 것과 달리 **메모까지 편다.** 거기는 회차를 훑는
+ * 목록이고 여기는 수업 하나만 있는 화면이라 접을 이유가 없다.
  */
 @Composable
 fun ScheduleLogBlock(log: ScheduleLog, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxWidth()) {
-        Text("일지", style = TeamFisType.bodySm, color = TeamFisColor.TextSecondary)
+    Column(
+        modifier
+            .fillMaxWidth()
+            .background(TeamFisColor.Surface1, TeamFisRadius.card)
+            .padding(TeamFisSpacing.lg),
+    ) {
+        Text("일지", style = TeamFisType.titleSm, color = TeamFisColor.TextPrimary)
 
         if (log.parts.isNotEmpty()) {
             BodyPartChips(log.parts, modifier = Modifier.padding(top = TeamFisSpacing.md))

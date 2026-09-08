@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -90,7 +91,7 @@ fun ScheduleDetailScreen(item: ScheduleClass, onBack: () -> Unit) {
         // 머리는 고정, 아래만 흐른다 (회원 상세와 같은 모양)
         DetailHeader(title = dayTitle(at.toLocalDate()), onBack = onBack)
 
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -159,34 +160,37 @@ fun ScheduleDetailScreen(item: ScheduleClass, onBack: () -> Unit) {
                 )
             }
 
-            // 예정이면 처리 버튼, 끝난 수업이면 그 자리에 일지가 온다.
-            // 회원 상세의 회차 카드와 같은 갈래다 — 한 자리를 둘이 나눠 쓴다
-            when {
-                item.status == SessionStatus.Scheduled -> Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = TeamFisSpacing.xl,
-                            start = TeamFisSpacing.screenHorizontal,
-                            end = TeamFisSpacing.screenHorizontal,
-                            bottom = TeamFisSpacing.xxxl,
-                        ),
-                    horizontalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
-                ) {
-                    // TODO(서버): 회차 처리 API 가 붙어야 실제로 바뀐다 (회원 상세와 같다)
-                    SessionButton("노쇼", TeamFisColor.Surface2, TeamFisColor.TextSecondary) {}
-                    SessionButton("완료", TeamFisColor.Brand, TeamFisColor.TextPrimary) {}
-                }
-
-                log != null -> ScheduleLogBlock(
-                    log,
+            // 끝난 수업에만 온다. 예정이면 아직 쓸 것이 없고, 노쇼는 한 게 없다
+            log?.let {
+                ScheduleLogBlock(
+                    it,
                     modifier = Modifier.padding(
                         top = TeamFisSpacing.xl,
                         start = TeamFisSpacing.screenHorizontal,
                         end = TeamFisSpacing.screenHorizontal,
-                        bottom = TeamFisSpacing.xxxl,
                     ),
                 )
+            }
+
+            Spacer(Modifier.height(TeamFisSpacing.xxxl))
+        }
+
+        // **처리는 화면 아래에 붙인다** (2026-09-08 대표 지시). 흐르는 값 사이에 끼면
+        // 스크롤 위치에 따라 있다 없다 하고, 아래가 통째로 비어 보인다.
+        // 등록 화면의 `BottomActionButton` 과 같은 자리다
+        if (item.status == SessionStatus.Scheduled) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = TeamFisSpacing.screenHorizontal,
+                        vertical = TeamFisSpacing.md,
+                    ),
+                horizontalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
+            ) {
+                // TODO(서버): 회차 처리 API 가 붙어야 실제로 바뀐다 (회원 상세와 같다)
+                SessionButton("노쇼", TeamFisColor.Surface2, TeamFisColor.TextSecondary) {}
+                SessionButton("완료", TeamFisColor.Brand, TeamFisColor.TextPrimary) {}
             }
         }
     }

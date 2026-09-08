@@ -9,18 +9,21 @@ struct ScheduleLog {
     let note: String
 }
 
-/// 일지 조회 블록 — 운동 부위 칩 + 메모.
+/// 일지 카드 — 운동 부위 칩 + 메모.
 ///
-/// 회원 상세의 회차 카드가 부위만 보여 주는 것과 달리 **메모까지 편다.**
-/// 거기는 회차를 훑는 목록이고 여기는 수업 하나만 있는 화면이라 접을 이유가 없다.
+/// **회원 상세의 회차 카드와 같은 판이다** (2026-09-08 대표 지시) — 같은 결의 내용이
+/// 한 화면에서는 카드고 다른 화면에서는 맨바닥이면 안 읽힌다.
+///
+/// 회차 카드가 부위만 보여 주는 것과 달리 **메모까지 편다.** 거기는 회차를 훑는
+/// 목록이고 여기는 수업 하나만 있는 화면이라 접을 이유가 없다.
 struct ScheduleLogBlock: View {
     let log: ScheduleLog
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("일지")
-                .font(TeamFisFont.bodySm)
-                .foregroundStyle(TeamFisColor.textSecondary)
+                .font(TeamFisFont.titleSm)
+                .foregroundStyle(TeamFisColor.textPrimary)
 
             if !log.parts.isEmpty {
                 BodyPartChips(parts: log.parts)
@@ -36,6 +39,11 @@ struct ScheduleLogBlock: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(TeamFisSpacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
+                .fill(TeamFisColor.surface1)
+        )
     }
 }
 

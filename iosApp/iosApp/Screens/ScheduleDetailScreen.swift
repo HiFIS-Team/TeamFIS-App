@@ -74,26 +74,30 @@ struct ScheduleDetailScreen: View {
                     .padding(.top, TeamFisSpacing.lg)
                     .padding(.horizontal, TeamFisSpacing.screenHorizontal)
 
-                    // 예정이면 처리 버튼, 끝난 수업이면 그 자리에 일지가 온다.
-                    // 회원 상세의 회차 카드와 같은 갈래다 — 한 자리를 둘이 나눠 쓴다
-                    if item.status == .scheduled {
-                        HStack(spacing: TeamFisSpacing.md) {
-                            // TODO(서버): 회차 처리 API 가 붙어야 실제로 바뀐다 (회원 상세와 같다)
-                            SessionButton(label: "노쇼", background: TeamFisColor.surface2,
-                                          content: TeamFisColor.textSecondary, action: {})
-                            SessionButton(label: "완료", background: TeamFisColor.brand,
-                                          content: TeamFisColor.textPrimary, action: {})
-                        }
-                        .frame(height: 48)
-                        .padding(.top, TeamFisSpacing.xl)
-                        .padding(.horizontal, TeamFisSpacing.screenHorizontal)
-                    } else if let log {
+                    // 끝난 수업에만 온다. 예정이면 아직 쓸 것이 없고, 노쇼는 한 게 없다
+                    if let log {
                         ScheduleLogBlock(log: log)
                             .padding(.top, TeamFisSpacing.xl)
                             .padding(.horizontal, TeamFisSpacing.screenHorizontal)
                     }
                 }
                 .padding(.bottom, TeamFisSpacing.xxxl)
+            }
+
+            // **처리는 화면 아래에 붙인다** (2026-09-08 대표 지시). 흐르는 값 사이에 끼면
+            // 스크롤 위치에 따라 있다 없다 하고, 아래가 통째로 비어 보인다.
+            // 등록 화면의 `BottomActionButton` 과 같은 자리다
+            if item.status == .scheduled {
+                HStack(spacing: TeamFisSpacing.md) {
+                    // TODO(서버): 회차 처리 API 가 붙어야 실제로 바뀐다 (회원 상세와 같다)
+                    SessionButton(label: "노쇼", background: TeamFisColor.surface2,
+                                  content: TeamFisColor.textSecondary, action: {})
+                    SessionButton(label: "완료", background: TeamFisColor.brand,
+                                  content: TeamFisColor.textPrimary, action: {})
+                }
+                .frame(height: 48)
+                .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+                .padding(.vertical, TeamFisSpacing.md)
             }
         }
         .sheet(isPresented: $datePickerOpen) { datePicker }
