@@ -24,8 +24,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.teamfis.app.ui.components.Member
+import com.teamfis.app.ui.components.ClassTodo
 import com.teamfis.app.ui.components.ScheduleClass
 import com.teamfis.app.ui.screens.ClassScreen
+import com.teamfis.app.ui.screens.ClassSignScreen
 import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberRegisterScreen
 import com.teamfis.app.ui.screens.MemberScreen
@@ -52,6 +54,8 @@ fun AppShell() {
     var openedMember by remember { mutableStateOf<Member?>(null) }
     // 상세로 넘길 수업. 회원과 같은 이유로 셸이 들고 있는다
     var openedClass by remember { mutableStateOf<ScheduleClass?>(null) }
+    // 사인을 받을 수업 — 상세와 다른 잎이라 따로 든다
+    var signingClass by remember { mutableStateOf<ClassTodo?>(null) }
     // 등록 화면이 고른 회원들 — 고르는 잎이 등록 잎 위에 또 얹히므로 셸이 들고 있는다
     var registerReferrer by remember { mutableStateOf<Member?>(null) }
     var registerRenewMember by remember { mutableStateOf<Member?>(null) }
@@ -77,6 +81,10 @@ fun AppShell() {
                     openedClass = it
                     nav.navigateOnce(Route.SCHEDULE_DETAIL)
                 },
+                onSign = {
+                    signingClass = it
+                    nav.navigateOnce(Route.CLASS_SIGN)
+                },
                 onNotification = { nav.navigateOnce(Route.NOTIFICATIONS) },
                 onAddMember = {
                     // 지난번에 고른 회원이 남아 있으면 안 된다
@@ -90,6 +98,12 @@ fun AppShell() {
             // 뒤로 간 직후 한 프레임 동안 null 이 될 수 있어 방어한다
             openedClass?.let {
                 ScheduleDetailScreen(item = it, onBack = { nav.popBackStack() })
+            }
+        }
+        composable(Route.CLASS_SIGN) {
+            // 뒤로 간 직후 한 프레임 동안 null 이 될 수 있어 방어한다
+            signingClass?.let {
+                ClassSignScreen(todo = it, onBack = { nav.popBackStack() })
             }
         }
         composable(Route.NOTIFICATIONS) {
@@ -150,6 +164,7 @@ fun AppShell() {
 private fun TabShell(
     onMember: (Member) -> Unit,
     onClass: (ScheduleClass) -> Unit,
+    onSign: (ClassTodo) -> Unit,
     onNotification: () -> Unit,
     onAddMember: () -> Unit,
 ) {
@@ -178,6 +193,7 @@ private fun TabShell(
                 )
                 BottomTab.Class -> ClassScreen(
                     onClass = onClass,
+                    onSign = onSign,
                     onNotification = onNotification,
                 )
                 // 홈은 나머지가 다 찬 뒤에 마지막으로 짠다

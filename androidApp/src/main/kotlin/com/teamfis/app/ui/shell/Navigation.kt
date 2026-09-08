@@ -17,6 +17,9 @@ object Route {
     /** 수업 상세 — 일정의 수업 카드를 누르면 들어온다 */
     const val SCHEDULE_DETAIL = "schedule_detail"
 
+    /** 세션 사인 — 수업 탭의 사인 목록에서 한 건을 누르면 들어온다 */
+    const val CLASS_SIGN = "class_sign"
+
     /** 알림함 — 헤더의 종을 누르면 들어온다 */
     const val NOTIFICATIONS = "notifications"
 

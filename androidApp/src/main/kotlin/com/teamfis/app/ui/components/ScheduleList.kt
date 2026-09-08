@@ -83,11 +83,6 @@ fun ScheduleClassCard(
     item: ScheduleClass,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    /**
-     * 큰 시각 위에 붙는 날짜 한 줄. **여러 날이 섞이는 목록에서만 넘긴다.**
-     * 일정은 하루치만 세우므로 안 넘기고, 그래서 일정 카드는 예전 그대로다
-     */
-    date: String? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
     Column(
@@ -116,24 +111,12 @@ fun ScheduleClassCard(
             SessionBadge(item.status)
         }
 
-        if (date != null) {
-            Text(
-                date,
-                style = TeamFisType.caption,
-                color = TeamFisColor.TextTertiary,
-                modifier = Modifier.padding(top = TeamFisSpacing.sm),
-            )
-        }
-
         Text(
             item.time,
             // 시간은 자릿수가 바뀌어도 줄이 안 흔들려야 한다
             style = TeamFisType.titleLg.copy(fontFeatureSettings = "tnum"),
             color = TeamFisColor.TextPrimary,
-            // 날짜가 붙으면 둘이 한 덩어리라 사이를 좁힌다
-            modifier = Modifier.padding(
-                top = if (date == null) TeamFisSpacing.sm else TeamFisSpacing.xs,
-            ),
+            modifier = Modifier.padding(top = TeamFisSpacing.sm),
         )
 
         Row(

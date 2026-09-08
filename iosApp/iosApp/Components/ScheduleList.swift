@@ -56,9 +56,6 @@ func clockTime(_ at: Date) -> String {
 struct ScheduleClassCard: View {
     let item: ScheduleClass
     var onSelect: () -> Void = {}
-    /// 큰 시각 위에 붙는 날짜 한 줄. **여러 날이 섞이는 목록에서만 넘긴다.**
-    /// 일정은 하루치만 세우므로 안 넘기고, 그래서 일정 카드는 예전 그대로다
-    var date: String?
 
     var body: some View {
         Button(action: onSelect) {
@@ -74,19 +71,11 @@ struct ScheduleClassCard: View {
                     SessionBadge(status: item.status)
                 }
 
-                if let date {
-                    Text(date)
-                        .font(TeamFisFont.caption)
-                        .foregroundStyle(TeamFisColor.textTertiary)
-                        .padding(.top, TeamFisSpacing.sm)
-                }
-
                 Text(item.time)
                     // 시간은 자릿수가 바뀌어도 줄이 안 흔들려야 한다
                     .font(TeamFisFont.titleLg.monospacedDigit())
                     .foregroundStyle(TeamFisColor.textPrimary)
-                    // 날짜가 붙으면 둘이 한 덩어리라 사이를 좁힌다
-                    .padding(.top, date == nil ? TeamFisSpacing.sm : TeamFisSpacing.xs)
+                    .padding(.top, TeamFisSpacing.sm)
 
                 HStack(spacing: TeamFisSpacing.sm) {
                     Text(item.product)
