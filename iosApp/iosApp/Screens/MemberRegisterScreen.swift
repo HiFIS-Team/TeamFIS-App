@@ -21,6 +21,7 @@ struct MemberRegisterScreen: View {
 
     @State private var name = ""
     @State private var phone = ""
+    @State private var birth = ""
     @State private var visitPath: VisitPath?
 
     @State private var rounds = ""
@@ -54,6 +55,7 @@ struct MemberRegisterScreen: View {
         } else {
             if name.trimmingCharacters(in: .whitespaces).isEmpty { return "성함을 입력해주세요" }
             if phone.trimmingCharacters(in: .whitespaces).isEmpty { return "연락처를 입력해주세요" }
+            if birth.trimmingCharacters(in: .whitespaces).isEmpty { return "생년월일을 입력해주세요" }
             if visitPath == nil { return "방문 경로를 골라주세요" }
         }
         if roundCount <= 0 { return "회차를 입력해주세요" }
@@ -129,6 +131,8 @@ struct MemberRegisterScreen: View {
             FormField(text: $name, hint: "성함")
             Spacer().frame(height: TeamFisSpacing.sm)
             FormField(text: $phone, hint: "연락처 (010-0000-0000)", keyboard: .phonePad)
+            Spacer().frame(height: TeamFisSpacing.sm)
+            FormField(text: $birth, hint: "생년월일 (19991212)", keyboard: .numberPad)
             Spacer().frame(height: TeamFisSpacing.sm)
             // 소개한 회원은 손으로 적는 이름이 아니라 **등록된 회원을 고른다**
             PickerField(

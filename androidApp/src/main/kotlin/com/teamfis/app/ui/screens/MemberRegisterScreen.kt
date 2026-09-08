@@ -86,6 +86,7 @@ fun MemberRegisterScreen(
 
     var name by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
+    var birth by rememberSaveable { mutableStateOf("") }
     var visitPath by rememberSaveable { mutableStateOf<VisitPath?>(null) }
 
     var rounds by rememberSaveable { mutableStateOf("") }
@@ -117,6 +118,7 @@ fun MemberRegisterScreen(
         renew && renewMember == null -> "재등록할 회원을 골라주세요"
         !renew && name.isBlank() -> "성함을 입력해주세요"
         !renew && phone.isBlank() -> "연락처를 입력해주세요"
+        !renew && birth.isBlank() -> "생년월일을 입력해주세요"
         !renew && visitPath == null -> "방문 경로를 골라주세요"
         roundCount <= 0 -> "회차를 입력해주세요"
         paymentWon <= 0 -> "결제액을 입력해주세요"
@@ -194,6 +196,13 @@ fun MemberRegisterScreen(
                     { phone = it },
                     hint = "연락처 (010-0000-0000)",
                     keyboardType = KeyboardType.Phone,
+                )
+                Spacer(Modifier.height(TeamFisSpacing.sm))
+                FormField(
+                    birth,
+                    { birth = it },
+                    hint = "생년월일 (19991212)",
+                    keyboardType = KeyboardType.Number,
                 )
                 Spacer(Modifier.height(TeamFisSpacing.sm))
                 // 소개한 회원은 손으로 적는 이름이 아니라 **등록된 회원을 고른다**
