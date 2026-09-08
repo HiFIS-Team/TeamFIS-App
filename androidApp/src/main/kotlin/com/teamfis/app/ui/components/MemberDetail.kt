@@ -84,6 +84,12 @@ data class MemberSession(
     val status: SessionStatus,
     /** 수업이 끝난 회차만 채워진다 */
     val parts: List<BodyPart> = emptyList(),
+    /**
+     * 회원에게 세션 사인까지 받았나.
+     *
+     * **일지를 썼어도 사인 전이면 아직 안 닫힌 회차다.** 목록에서는 그때까지 펴지 않는다.
+     */
+    val signed: Boolean = false,
 )
 
 /** 회차 상태. */
@@ -277,12 +283,7 @@ fun ProductSelector(
  * 끝났으면 그날 한 운동 부위. 같은 자리에 다른 것이 오므로 카드 높이도 달라진다.
  */
 @Composable
-fun SessionCard(
-    session: MemberSession,
-    onNoShow: () -> Unit = {},
-    onDone: () -> Unit = {},
-    modifier: Modifier = Modifier,
-) {
+fun SessionCard(session: MemberSession, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -319,18 +320,11 @@ fun SessionCard(
             }
         }
 
-        when {
-            session.status == SessionStatus.Scheduled -> Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = TeamFisSpacing.lg),
-                horizontalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
-            ) {
-                SessionButton("노쇼", TeamFisColor.Surface2, TeamFisColor.TextSecondary, onNoShow)
-                SessionButton("완료", TeamFisColor.Brand, TeamFisColor.TextPrimary, onDone)
-            }
-
-            session.parts.isNotEmpty() -> BodyPartChips(
+        // **사인까지 받은 회차만 편다** (2026-09-08 대표 지시).
+        // 여기는 회차를 훑는 자리라 아직 안 닫힌 것은 그냥 카드로 둔다 —
+        // 처리(노쇼·완료)도 일정에서 연 수업 상세 한 곳에서만 한다
+        if (session.signed && session.parts.isNotEmpty()) {
+            BodyPartChips(
                 parts = session.parts,
                 modifier = Modifier.padding(top = TeamFisSpacing.md),
             )

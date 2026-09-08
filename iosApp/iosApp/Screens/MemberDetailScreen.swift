@@ -69,7 +69,6 @@ struct MemberDetailScreen: View {
 
                     VStack(spacing: TeamFisSpacing.md) {
                         ForEach(product.sessions) { session in
-                            // 회차 처리는 서버가 붙어야 한다
                             SessionCard(session: session)
                         }
                     }
@@ -101,8 +100,10 @@ struct MemberDetailScreen: View {
                         MemberSession(round: 3, at: "2026.03.21 (토) 10:00", status: .scheduled),
                         MemberSession(
                             round: 2, at: "2026.03.18 (수) 19:30", status: .done,
-                            parts: [.chest, .leg, .back, .arm, .shoulder, .cardio]
+                            parts: [.chest, .leg, .back, .arm, .shoulder, .cardio],
+                            signed: true
                         ),
+                        // 일지는 썼는데 사인을 아직 못 받은 회차 — 그냥 카드로 선다
                         MemberSession(
                             round: 1, at: "2026.03.14 (토) 10:00", status: .done,
                             parts: [.back, .arm]
@@ -117,7 +118,7 @@ struct MemberDetailScreen: View {
                     sessions: [
                         MemberSession(
                             round: 30, at: "2026.02.27 (금) 20:00", status: .done,
-                            parts: [.leg, .cardio]
+                            parts: [.leg, .cardio], signed: true
                         ),
                         MemberSession(round: 29, at: "2026.02.24 (화) 20:00", status: .noShow),
                     ]

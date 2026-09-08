@@ -55,6 +55,10 @@ struct MemberSession: Identifiable {
     let status: SessionStatus
     /// 수업이 끝난 회차만 채워진다
     var parts: [BodyPart] = []
+    /// 회원에게 세션 사인까지 받았나.
+    ///
+    /// **일지를 썼어도 사인 전이면 아직 안 닫힌 회차다.** 목록에서는 그때까지 펴지 않는다.
+    var signed: Bool = false
 }
 
 /// 회차 상태.
@@ -236,10 +240,6 @@ struct ProductSelector: View {
 /// 끝났으면 그날 한 운동 부위. 같은 자리에 다른 것이 오므로 카드 높이도 달라진다.
 struct SessionCard: View {
     let session: MemberSession
-    var onNoShow: () -> Void = {}
-    var onDone: () -> Void = {}
-
-    private let buttonHeight: CGFloat = 48
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -265,16 +265,10 @@ struct SessionCard: View {
             }
             .padding(.top, TeamFisSpacing.sm)
 
-            if session.status == .scheduled {
-                HStack(spacing: TeamFisSpacing.md) {
-                    SessionButton(label: "노쇼", background: TeamFisColor.surface2,
-                                  content: TeamFisColor.textSecondary, action: onNoShow)
-                    SessionButton(label: "완료", background: TeamFisColor.brand,
-                                  content: TeamFisColor.textPrimary, action: onDone)
-                }
-                .frame(height: buttonHeight)
-                .padding(.top, TeamFisSpacing.lg)
-            } else if !session.parts.isEmpty {
+            // **사인까지 받은 회차만 편다** (2026-09-08 대표 지시).
+            // 여기는 회차를 훑는 자리라 아직 안 닫힌 것은 그냥 카드로 둔다 —
+            // 처리(노쇼·완료)도 일정에서 연 수업 상세 한 곳에서만 한다
+            if session.signed, !session.parts.isEmpty {
                 BodyPartChips(parts: session.parts)
                     .padding(.top, TeamFisSpacing.md)
             }

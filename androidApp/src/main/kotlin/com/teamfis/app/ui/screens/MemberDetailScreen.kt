@@ -126,10 +126,7 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
                 ),
                 verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
             ) {
-                product.sessions.forEach { session ->
-                    // 회차 처리는 서버가 붙어야 한다
-                    SessionCard(session, onNoShow = {}, onDone = {})
-                }
+                product.sessions.forEach { session -> SessionCard(session) }
             }
         }
     }
@@ -160,7 +157,9 @@ private fun placeholderDetail(member: Member) = MemberDetail(
                         BodyPart.Chest, BodyPart.Leg, BodyPart.Back,
                         BodyPart.Arm, BodyPart.Shoulder, BodyPart.Cardio,
                     ),
+                    signed = true,
                 ),
+                // 일지는 썼는데 사인을 아직 못 받은 회차 — 그냥 카드로 선다
                 MemberSession(
                     1, "2026.03.14 (토) 10:00", SessionStatus.Done,
                     parts = listOf(BodyPart.Back, BodyPart.Arm),
@@ -176,6 +175,7 @@ private fun placeholderDetail(member: Member) = MemberDetail(
                 MemberSession(
                     30, "2026.02.27 (금) 20:00", SessionStatus.Done,
                     parts = listOf(BodyPart.Leg, BodyPart.Cardio),
+                    signed = true,
                 ),
                 MemberSession(29, "2026.02.24 (화) 20:00", SessionStatus.NoShow),
             ),
