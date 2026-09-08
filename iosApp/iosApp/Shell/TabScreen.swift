@@ -19,6 +19,11 @@ struct TabScreen: View {
                     onClass: { open(.scheduleDetail($0)) },
                     onNotification: { open(.notifications) }
                 )
+            case .lesson:
+                ClassScreen(
+                    onClass: { open(.scheduleDetail($0)) },
+                    onNotification: { open(.notifications) }
+                )
             case .member:
                 MemberScreen(
                     onMember: { open(.memberDetail($0)) },

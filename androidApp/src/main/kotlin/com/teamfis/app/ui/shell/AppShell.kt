@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.teamfis.app.ui.components.Member
 import com.teamfis.app.ui.components.ScheduleClass
+import com.teamfis.app.ui.screens.ClassScreen
 import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberRegisterScreen
 import com.teamfis.app.ui.screens.MemberScreen
@@ -175,7 +176,11 @@ private fun TabShell(
                     onNotification = onNotification,
                     onAddMember = onAddMember,
                 )
-                // 홈·수업은 아직 자리 표시자다 — 홈은 나머지가 다 찬 뒤에 짠다
+                BottomTab.Class -> ClassScreen(
+                    onClass = onClass,
+                    onNotification = onNotification,
+                )
+                // 홈은 나머지가 다 찬 뒤에 마지막으로 짠다
                 else -> Column(Modifier.fillMaxSize()) {
                     AppHeader(onNotification = onNotification)
 

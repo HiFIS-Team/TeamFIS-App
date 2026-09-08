@@ -43,7 +43,7 @@ struct MemberFilterBar: View {
     var body: some View {
         HStack(spacing: TeamFisSpacing.sm) {
             ForEach(MemberStatus.allCases, id: \.self) { status in
-                FilterChip(
+                CountChip(
                     label: status.label,
                     count: counts[status] ?? 0,
                     selected: selected == status
@@ -89,7 +89,8 @@ private struct AddMemberButton: View {
 }
 
 /// 필터 칩 하나 — 이름 + 숫자. 고르면 브랜드 색으로 찬다.
-private struct FilterChip: View {
+/// 수업 탭 필터도 같은 칩을 쓴다. 이름을 `CountChip` 으로 둔 것은 회원 전용이 아니어서다.
+struct CountChip: View {
     let label: String
     let count: Int
     let selected: Bool

@@ -67,7 +67,7 @@ fun MemberFilterBar(
         horizontalArrangement = Arrangement.spacedBy(TeamFisSpacing.sm),
     ) {
         MemberStatus.entries.forEach { status ->
-            FilterChip(
+            CountChip(
                 label = status.label,
                 count = counts[status] ?: 0,
                 selected = selected == status,
@@ -77,9 +77,14 @@ fun MemberFilterBar(
     }
 }
 
-/** 필터 칩 하나 — 이름 + 숫자. 고르면 브랜드 색으로 찬다. */
+/**
+ * 필터 칩 하나 — 이름 + 숫자. 고르면 브랜드 색으로 찬다.
+ *
+ * 수업 탭 필터도 같은 칩을 쓴다. 이름을 `CountChip` 으로 둔 것은 회원 전용이 아니어서고,
+ * 머티리얼의 `FilterChip` 과 이름이 겹치지 않게 하려는 것도 있다.
+ */
 @Composable
-private fun FilterChip(label: String, count: Int, selected: Boolean, onClick: () -> Unit) {
+fun CountChip(label: String, count: Int, selected: Boolean, onClick: () -> Unit) {
     val background by animateColorAsState(
         targetValue = if (selected) TeamFisColor.Brand else TeamFisColor.Surface1,
         animationSpec = TeamFisMotion.fast(),
