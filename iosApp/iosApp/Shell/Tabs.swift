@@ -2,21 +2,25 @@ import Foundation
 
 /// 하단 탭.
 ///
+/// `수업` 하나가 **일지와 세션을 같이 맡는다** (2026-09-08 대표 지시).
+/// 둘 다 수업에 붙는 기록이라 탭을 따로 둘 만큼 남남이 아니었다.
+/// 그래서 남은 자리에 `일정` 이 들어왔다.
+///
 /// **네 개는 바 안에, 검색은 바 밖에 선다** — iOS 26 은 `role: .search` 인 탭을
 /// 유리 바에서 떼어내 옆에 동그란 버튼으로 그린다 (Apple Music 과 같은 모양).
 /// 안드로이드에는 검색 탭이 없다. 거기선 검색이 헤더에 있다.
 enum TabItem: Hashable, CaseIterable {
-    case home, member, log, session, search
+    case home, schedule, member, lesson, search
 
     /// 유리 바 안에 서는 넷
-    static let main: [TabItem] = [.home, .member, .log, .session]
+    static let main: [TabItem] = [.home, .schedule, .member, .lesson]
 
     var label: String {
         switch self {
         case .home: "홈"
+        case .schedule: "일정"
         case .member: "회원"
-        case .log: "일지"
-        case .session: "세션"
+        case .lesson: "수업"
         case .search: "검색"
         }
     }
@@ -24,9 +28,9 @@ enum TabItem: Hashable, CaseIterable {
     var icon: String {
         switch self {
         case .home: "ic_tab_home"
+        case .schedule: "ic_tab_schedule"
         case .member: "ic_tab_member"
-        case .log: "ic_tab_log"
-        case .session: "ic_tab_session"
+        case .lesson: "ic_tab_class"
         case .search: "ic_tab_search"
         }
     }
