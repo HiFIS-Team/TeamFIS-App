@@ -153,6 +153,42 @@ fun MemberRegisterScreen(
         ) {
             Spacer(Modifier.height(TeamFisSpacing.md))
 
+            // **어떤 등록인지부터 정한다** (2026-09-08 대표 지시). 켜면 아래 칸들이
+            // 지난 실적으로 잡히므로, 다 적고 나서 묻는 것보다 먼저 묻는 게 맞다.
+            // 딸린 칸(실제 결제일·이미 받은 회차)도 같이 올렸다 — 토글만 올리면
+            // 켰을 때 어디에 칸이 생겼는지 못 찾는다
+            ToggleRow(
+                title = "예전에 등록한 회원",
+                description = "앱을 켜기 전에 등록한 건을 뒤늦게 넣을 때",
+                checked = existing,
+                onCheckedChange = {
+                    existing = it
+                    // 끄면 값을 버린다 — 남겨 두면 다시 켰을 때 남의 날짜가 서 있다
+                    if (!it) {
+                        purchasedAt = null
+                        used = ""
+                    }
+                },
+            )
+
+            if (existing) {
+                Spacer(Modifier.height(TeamFisSpacing.sm))
+                PickerField(
+                    label = "실제 결제일",
+                    value = purchasedAt?.let { dateLabel(it) },
+                    onTap = { datePickerOpen = true },
+                )
+                Spacer(Modifier.height(TeamFisSpacing.sm))
+                FormField(
+                    used,
+                    { used = it },
+                    hint = "이미 받은 회차 (예: 5)",
+                    keyboardType = KeyboardType.Number,
+                )
+            }
+
+            Spacer(Modifier.height(TeamFisSpacing.xxl))
+
             if (renew) {
                 FieldLabel("재등록할 회원")
                 FormField(search, { search = it }, hint = "회원 이름 검색")
@@ -211,38 +247,6 @@ fun MemberRegisterScreen(
             )
 
             UnitPriceRow(unitPrice, Modifier.padding(top = TeamFisSpacing.md))
-
-            Spacer(Modifier.height(TeamFisSpacing.xl))
-
-            ToggleRow(
-                title = "예전에 등록한 회원",
-                description = "앱을 켜기 전에 등록한 건을 뒤늦게 넣을 때",
-                checked = existing,
-                onCheckedChange = {
-                    existing = it
-                    // 끄면 값을 버린다 — 남겨 두면 다시 켰을 때 남의 날짜가 서 있다
-                    if (!it) {
-                        purchasedAt = null
-                        used = ""
-                    }
-                },
-            )
-
-            if (existing) {
-                Spacer(Modifier.height(TeamFisSpacing.sm))
-                PickerField(
-                    label = "실제 결제일",
-                    value = purchasedAt?.let { dateLabel(it) },
-                    onTap = { datePickerOpen = true },
-                )
-                Spacer(Modifier.height(TeamFisSpacing.sm))
-                FormField(
-                    used,
-                    { used = it },
-                    hint = "이미 받은 회차 (예: 5)",
-                    keyboardType = KeyboardType.Number,
-                )
-            }
 
             Spacer(Modifier.height(TeamFisSpacing.xxxl))
         }

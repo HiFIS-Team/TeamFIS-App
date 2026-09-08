@@ -82,6 +82,10 @@ struct MemberRegisterScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Spacer().frame(height: TeamFisSpacing.md)
 
+                    existingSection
+
+                    Spacer().frame(height: TeamFisSpacing.xxl)
+
                     if renew {
                         renewSection
                     } else {
@@ -211,30 +215,14 @@ struct MemberRegisterScreen: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - 등록권 (두 모드 공통)
+    // MARK: - 어떤 등록인지
 
-    private var ticketSection: some View {
+    /// **어떤 등록인지부터 정한다** (2026-09-08 대표 지시). 켜면 아래 칸들이
+    /// 지난 실적으로 잡히므로, 다 적고 나서 묻는 것보다 먼저 묻는 게 맞다.
+    /// 딸린 칸(실제 결제일·이미 받은 회차)도 같이 올렸다 — 토글만 올리면
+    /// 켰을 때 어디에 칸이 생겼는지 못 찾는다
+    private var existingSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            FieldLabel("등록권")
-            FormField(text: $rounds, hint: "회차 (예: 30)", keyboard: .numberPad)
-            Spacer().frame(height: TeamFisSpacing.sm)
-            FormField(text: $payment, hint: "결제액 (원)", keyboard: .numberPad)
-
-            // 회당 단가 — 회차·결제액에서 저절로 나온다. 손으로 못 고친다
-            HStack(spacing: TeamFisSpacing.md) {
-                Text("회당 단가")
-                    .font(TeamFisFont.bodySm)
-                    .foregroundStyle(TeamFisColor.textSecondary)
-                Spacer(minLength: 0)
-                Text(unitPrice > 0 ? "\(comma(unitPrice))원" : "—")
-                    .font(TeamFisFont.bodySm.monospacedDigit())
-                    .foregroundStyle(unitPrice > 0 ? TeamFisColor.brand : TeamFisColor.textTertiary)
-            }
-            .padding(.top, TeamFisSpacing.md)
-            .padding(.horizontal, TeamFisSpacing.xs)
-
-            Spacer().frame(height: TeamFisSpacing.xl)
-
             ToggleRow(
                 title: "예전에 등록한 회원",
                 description: "앱을 켜기 전에 등록한 건을 뒤늦게 넣을 때",
@@ -261,6 +249,31 @@ struct MemberRegisterScreen: View {
                 Spacer().frame(height: TeamFisSpacing.sm)
                 FormField(text: $used, hint: "이미 받은 회차 (예: 5)", keyboard: .numberPad)
             }
+        }
+    }
+
+    // MARK: - 등록권 (두 모드 공통)
+
+    private var ticketSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            FieldLabel("등록권")
+            FormField(text: $rounds, hint: "회차 (예: 30)", keyboard: .numberPad)
+            Spacer().frame(height: TeamFisSpacing.sm)
+            FormField(text: $payment, hint: "결제액 (원)", keyboard: .numberPad)
+
+            // 회당 단가 — 회차·결제액에서 저절로 나온다. 손으로 못 고친다
+            HStack(spacing: TeamFisSpacing.md) {
+                Text("회당 단가")
+                    .font(TeamFisFont.bodySm)
+                    .foregroundStyle(TeamFisColor.textSecondary)
+                Spacer(minLength: 0)
+                Text(unitPrice > 0 ? "\(comma(unitPrice))원" : "—")
+                    .font(TeamFisFont.bodySm.monospacedDigit())
+                    .foregroundStyle(unitPrice > 0 ? TeamFisColor.brand : TeamFisColor.textTertiary)
+            }
+            .padding(.top, TeamFisSpacing.md)
+            .padding(.horizontal, TeamFisSpacing.xs)
+
         }
     }
 
