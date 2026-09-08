@@ -28,6 +28,12 @@ enum TeamFisSize {
     /// 목록 한 줄의 최소 높이 — 글이 짧아도 줄이 납작해지지 않게
     static let listRowMin: CGFloat = 56
 
+    /// 세그먼트 바 높이 (신규/재등록 같은 모드 고르개)
+    static let segment: CGFloat = 48
+
+    /// 화면 아래 고정 버튼
+    static let actionButton: CGFloat = 52
+
     /// 스크롤 맨 아래에 두는 여백 — **접힌 하단 유리 바가 마지막 줄을 덮지 않을 만큼**.
     /// 시스템이 잡아 주는 여백은 펴짐 기준이라, 접히며 줄어드는 만큼(~60)을 더해 둔다.
     ///

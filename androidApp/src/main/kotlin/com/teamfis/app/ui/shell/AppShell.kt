@@ -26,8 +26,10 @@ import androidx.navigation.compose.rememberNavController
 import com.teamfis.app.ui.components.Member
 import com.teamfis.app.ui.screens.HomeScreen
 import com.teamfis.app.ui.screens.MemberDetailScreen
+import com.teamfis.app.ui.screens.MemberRegisterScreen
 import com.teamfis.app.ui.screens.MemberScreen
 import com.teamfis.app.ui.screens.NotificationScreen
+import com.teamfis.app.ui.screens.ReferrerPickScreen
 import com.teamfis.app.ui.theme.TeamFisColor
 
 /**
@@ -45,6 +47,8 @@ fun AppShell() {
     val nav = rememberNavController()
     // 상세로 넘길 회원. NavHost 인자로 객체를 실어 보낼 수 없어 셸이 들고 있는다
     var openedMember by remember { mutableStateOf<Member?>(null) }
+    // 등록 화면의 `소개한 회원` — 고르는 잎이 등록 잎 위에 또 얹히므로 셸이 들고 있는다
+    var registerReferrer by remember { mutableStateOf<Member?>(null) }
 
     NavHost(
         navController = nav,
@@ -64,10 +68,32 @@ fun AppShell() {
                     nav.navigateOnce(Route.MEMBER_DETAIL)
                 },
                 onNotification = { nav.navigateOnce(Route.NOTIFICATIONS) },
+                onAddMember = {
+                    // 지난번에 고른 소개 회원이 남아 있으면 안 된다
+                    registerReferrer = null
+                    nav.navigateOnce(Route.MEMBER_REGISTER)
+                },
             )
         }
         composable(Route.NOTIFICATIONS) {
             NotificationScreen(onBack = { nav.popBackStack() })
+        }
+        composable(Route.MEMBER_REGISTER) {
+            MemberRegisterScreen(
+                onBack = { nav.popBackStack() },
+                referrer = registerReferrer,
+                onPickReferrer = { nav.navigateOnce(Route.REFERRER_PICK) },
+                onClearReferrer = { registerReferrer = null },
+            )
+        }
+        composable(Route.REFERRER_PICK) {
+            ReferrerPickScreen(
+                onBack = { nav.popBackStack() },
+                onPick = {
+                    registerReferrer = it
+                    nav.popBackStack()
+                },
+            )
         }
         composable(Route.MEMBER_DETAIL) {
             // 뒤로 간 직후 한 프레임 동안 null 이 될 수 있어 방어한다
@@ -88,7 +114,11 @@ fun AppShell() {
  * 아직 안 만든 탭은 이름만 띄우는 자리 표시자를 둔다.
  */
 @Composable
-private fun TabShell(onMember: (Member) -> Unit, onNotification: () -> Unit) {
+private fun TabShell(
+    onMember: (Member) -> Unit,
+    onNotification: () -> Unit,
+    onAddMember: () -> Unit,
+) {
     // ⚠️ `remember` 면 안 된다. 잎이 덮는 동안 셸은 컴포지션에서 빠지므로
     // 그냥 기억하면 **돌아왔을 때 홈 탭으로 리셋된다** (2026-09-08 확인)
     var selected by rememberSaveable { mutableStateOf(BottomTab.Home) }
@@ -107,6 +137,7 @@ private fun TabShell(onMember: (Member) -> Unit, onNotification: () -> Unit) {
                 BottomTab.Member -> MemberScreen(
                     onMember = onMember,
                     onNotification = onNotification,
+                    onAddMember = onAddMember,
                 )
                 // 나머지 탭은 아직 자리 표시자다
                 else -> Column(Modifier.fillMaxSize()) {

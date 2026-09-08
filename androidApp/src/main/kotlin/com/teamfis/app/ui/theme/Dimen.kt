@@ -31,4 +31,10 @@ object TeamFisSize {
 
     /** 목록 한 줄의 최소 높이 — 글이 짧아도 줄이 납작해지지 않게 */
     val listRowMin = 56.dp
+
+    /** 세그먼트 바 높이 (신규/재등록 같은 모드 고르개) */
+    val segment = 48.dp
+
+    /** 화면 아래 고정 버튼 */
+    val actionButton = 52.dp
 }

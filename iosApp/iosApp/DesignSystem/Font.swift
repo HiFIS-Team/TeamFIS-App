@@ -6,6 +6,8 @@ enum TeamFisFont {
     static let titleLg = Font.system(size: 22, weight: .bold)
     static let titleMd = Font.system(size: 20, weight: .semibold)
     static let titleSm = Font.system(size: 17, weight: .semibold)
+    /// 입력칸·긴 본문 — titleSm(17 semibold)은 굵고 bodySm(14)은 작다
+    static let body = Font.system(size: 16, weight: .regular)
     static let bodySm = Font.system(size: 14, weight: .medium)
     static let caption = Font.system(size: 12, weight: .regular)
 }

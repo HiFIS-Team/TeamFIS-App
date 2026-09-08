@@ -27,6 +27,7 @@ import com.teamfis.app.ui.components.MemberFilterBar
 import com.teamfis.app.ui.components.MemberRow
 import com.teamfis.app.R
 import com.teamfis.app.ui.components.MemberStatus
+import com.teamfis.app.ui.components.placeholderMembers
 import com.teamfis.app.ui.shell.AppHeader
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisRadius
@@ -111,22 +112,3 @@ fun MemberScreen(
 
 /** FAB(56) + 위아래 여백. 목록 마지막 줄이 버튼에 가리지 않을 만큼이다. */
 private val FabClearance = 88.dp
-
-/**
- * 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 목록을 주면 통째로 걷어낸다.
- * 이름은 아직 다 `000` 이다.
- */
-private val placeholderMembers = listOf(
-    Member("000", MemberStatus.Active, "12/30회차", "마지막 9/5"),
-    Member("000", MemberStatus.Active, "3/20회차", "마지막 9/6"),
-    Member("000", MemberStatus.Active, "8/10회차", "마지막 9/4"),
-    Member("000", MemberStatus.Active, "27/30회차", "마지막 9/6"),
-    Member("000", MemberStatus.Holding, "14/40회차", "9/1부터 홀딩"),
-    Member("000", MemberStatus.Active, "1/50회차", "마지막 9/2"),
-    Member("000", MemberStatus.Expired, "20/20회차", "8/28 만료"),
-    Member("000", MemberStatus.Active, "19/30회차", "마지막 9/3"),
-    Member("000", MemberStatus.Holding, "6/20회차", "8/20부터 홀딩"),
-    Member("000", MemberStatus.Expired, "30/30회차", "8/11 만료"),
-    Member("000", MemberStatus.Active, "5/10회차", "마지막 9/6"),
-    Member("000", MemberStatus.Expired, "10/10회차", "7/30 만료"),
-)

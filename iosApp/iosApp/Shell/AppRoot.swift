@@ -20,6 +20,8 @@ import SwiftUI
 /// 셸이 같이 움직이면 하단 바가 왕복하는 게 눈에 걸린다.
 struct AppRoot: View {
     @State private var pages: [Route] = []
+    /// 등록 화면의 `소개한 회원` — 고르는 잎이 등록 잎 위에 또 얹히므로 뿌리가 들고 있는다
+    @State private var registerReferrer: Member?
     /// 가장자리 스와이프로 끌고 있는 거리
     @State private var drag: CGFloat = 0
 
@@ -34,7 +36,11 @@ struct AppRoot: View {
                 // 잎이 반투명하면 뒤가 비치므로, 바탕은 여기서 한 번만 깐다
                 TeamFisColor.background.ignoresSafeArea()
 
-                TabShell(open: open)
+                TabShell(open: { route in
+                    // 지난번에 고른 소개 회원이 남아 있으면 안 된다
+                    if route == .memberRegister { registerReferrer = nil }
+                    open(route)
+                })
                     // 덮인 셸에는 손이 닿지 않는다
                     .allowsHitTesting(pages.isEmpty)
 
@@ -112,6 +118,21 @@ struct AppRoot: View {
                 MemberDetailScreen(member: member, onBack: back)
             case .notifications:
                 NotificationScreen(onBack: back)
+            case .memberRegister:
+                MemberRegisterScreen(
+                    onBack: back,
+                    referrer: registerReferrer,
+                    onPickReferrer: { open(.referrerPick) },
+                    onClearReferrer: { registerReferrer = nil }
+                )
+            case .referrerPick:
+                ReferrerPickScreen(
+                    onBack: back,
+                    onPick: {
+                        registerReferrer = $0
+                        back()
+                    }
+                )
             }
         }
     }

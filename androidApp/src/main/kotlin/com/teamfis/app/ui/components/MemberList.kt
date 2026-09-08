@@ -118,6 +118,23 @@ private fun FilterChip(label: String, count: Int, selected: Boolean, onClick: ()
 }
 
 /**
+ * 방문 경로 — **어떻게 알고 왔나.** 신규 등록에만 받는다.
+ *
+ * 재등록은 처음 올 때 이미 정해진 값이라 다시 안 묻는다.
+ *
+ * `지인소개` 와 `개인영업` 은 **다르다** — 앞은 기존 회원이 데려온 것이라
+ * `소개한 회원` 칸이 차고, 뒤는 트레이너가 직접 딴 것이라 안 찬다.
+ */
+enum class VisitPath(val label: String) {
+    WalkIn("워크인"),
+    Referral("지인소개"),
+    Sales("개인영업"),
+    Blog("블로그"),
+    Instagram("인스타"),
+    OtToPt("OT → PT"),
+}
+
+/**
  * 회원 한 줄 — 이름·상태 배지 / 아래 한 줄, 오른쪽 끝에 회차.
  *
  * **면을 안 깔고 줄만 나눈다.** 보유 회원이 수십 명이라 카드로 쌓으면 화면이 무겁고
@@ -194,3 +211,22 @@ fun MemberDivider(modifier: Modifier = Modifier) {
             .background(TeamFisColor.Divider),
     )
 }
+
+/**
+ * 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 목록을 주면 통째로 걷어낸다.
+ * 이름은 아직 다 `000` 이다.
+ */
+val placeholderMembers = listOf(
+    Member("000", MemberStatus.Active, "12/30회차", "마지막 9/5"),
+    Member("000", MemberStatus.Active, "3/20회차", "마지막 9/6"),
+    Member("000", MemberStatus.Active, "8/10회차", "마지막 9/4"),
+    Member("000", MemberStatus.Active, "27/30회차", "마지막 9/6"),
+    Member("000", MemberStatus.Holding, "14/40회차", "9/1부터 홀딩"),
+    Member("000", MemberStatus.Active, "1/50회차", "마지막 9/2"),
+    Member("000", MemberStatus.Expired, "20/20회차", "8/28 만료"),
+    Member("000", MemberStatus.Active, "19/30회차", "마지막 9/3"),
+    Member("000", MemberStatus.Holding, "6/20회차", "8/20부터 홀딩"),
+    Member("000", MemberStatus.Expired, "30/30회차", "8/11 만료"),
+    Member("000", MemberStatus.Active, "5/10회차", "마지막 9/6"),
+    Member("000", MemberStatus.Expired, "10/10회차", "7/30 만료"),
+)

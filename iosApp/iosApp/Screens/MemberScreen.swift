@@ -27,7 +27,7 @@ struct MemberScreen: View {
 
             MemberFilterBar(
                 selected: filter,
-                counts: Self.counts,
+                counts: Member.counts,
                 // 고른 것을 다시 누르면 풀려서 전체로 돌아온다
                 onSelect: { filter = (filter == $0) ? nil : $0 },
                 // TODO: 회원 추가 화면이 붙으면 연결한다
@@ -59,28 +59,7 @@ struct MemberScreen: View {
     }
 
     private var shown: [Member] {
-        guard let filter else { return Self.placeholderMembers }
-        return Self.placeholderMembers.filter { $0.status == filter }
+        guard let filter else { return Member.placeholder }
+        return Member.placeholder.filter { $0.status == filter }
     }
-
-    private static let counts = Dictionary(
-        grouping: placeholderMembers, by: \.status
-    ).mapValues(\.count)
-
-    /// 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 목록을 주면 통째로 걷어낸다.
-    /// 이름은 아직 다 `000` 이다.
-    private static let placeholderMembers = [
-        Member(name: "000", status: .active, progress: "12/30회차", detail: "마지막 9/5"),
-        Member(name: "000", status: .active, progress: "3/20회차", detail: "마지막 9/6"),
-        Member(name: "000", status: .active, progress: "8/10회차", detail: "마지막 9/4"),
-        Member(name: "000", status: .active, progress: "27/30회차", detail: "마지막 9/6"),
-        Member(name: "000", status: .holding, progress: "14/40회차", detail: "9/1부터 홀딩"),
-        Member(name: "000", status: .active, progress: "1/50회차", detail: "마지막 9/2"),
-        Member(name: "000", status: .expired, progress: "20/20회차", detail: "8/28 만료"),
-        Member(name: "000", status: .active, progress: "19/30회차", detail: "마지막 9/3"),
-        Member(name: "000", status: .holding, progress: "6/20회차", detail: "8/20부터 홀딩"),
-        Member(name: "000", status: .expired, progress: "30/30회차", detail: "8/11 만료"),
-        Member(name: "000", status: .active, progress: "5/10회차", detail: "마지막 9/6"),
-        Member(name: "000", status: .expired, progress: "10/10회차", detail: "7/30 만료"),
-    ]
 }

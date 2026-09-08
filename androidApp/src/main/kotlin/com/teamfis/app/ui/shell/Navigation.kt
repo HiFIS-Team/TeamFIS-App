@@ -16,6 +16,12 @@ object Route {
 
     /** 알림함 — 헤더의 종을 누르면 들어온다 */
     const val NOTIFICATIONS = "notifications"
+
+    /** 회원 등록 — 회원 목록의 FAB 으로 들어온다 */
+    const val MEMBER_REGISTER = "member_register"
+
+    /** 소개한 회원 고르기 — 등록 화면 위에 한 겹 더 얹힌다 */
+    const val REFERRER_PICK = "referrer_pick"
 }
 
 /**

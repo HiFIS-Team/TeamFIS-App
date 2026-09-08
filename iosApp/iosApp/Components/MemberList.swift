@@ -119,6 +119,27 @@ private struct FilterChip: View {
     }
 }
 
+/// 방문 경로 — **어떻게 알고 왔나.** 신규 등록에만 받는다.
+///
+/// 재등록은 처음 올 때 이미 정해진 값이라 다시 안 묻는다.
+///
+/// `지인소개` 와 `개인영업` 은 **다르다** — 앞은 기존 회원이 데려온 것이라
+/// `소개한 회원` 칸이 차고, 뒤는 트레이너가 직접 딴 것이라 안 찬다.
+enum VisitPath: CaseIterable, Hashable {
+    case walkIn, referral, sales, blog, instagram, otToPt
+
+    var label: String {
+        switch self {
+        case .walkIn: "워크인"
+        case .referral: "지인소개"
+        case .sales: "개인영업"
+        case .blog: "블로그"
+        case .instagram: "인스타"
+        case .otToPt: "OT → PT"
+        }
+    }
+}
+
 /// 회원 한 줄 — 이름·상태 배지 / 아래 한 줄, 오른쪽 끝에 회차.
 ///
 /// **면을 안 깔고 줄만 나눈다.** 보유 회원이 수십 명이라 카드로 쌓으면 화면이 무겁고
@@ -188,4 +209,26 @@ struct MemberDivider: View {
             .frame(height: 1)
             .padding(.horizontal, TeamFisSpacing.screenHorizontal)
     }
+}
+
+/// 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 목록을 주면 통째로 걷어낸다.
+/// 회원 화면과 등록 화면이 나눠 쓴다.
+extension Member {
+    static let placeholder: [Member] = [
+        Member(name: "000", status: .active, progress: "12/30회차", detail: "마지막 9/5"),
+        Member(name: "000", status: .active, progress: "3/20회차", detail: "마지막 9/6"),
+        Member(name: "000", status: .active, progress: "8/10회차", detail: "마지막 9/4"),
+        Member(name: "000", status: .active, progress: "27/30회차", detail: "마지막 9/6"),
+        Member(name: "000", status: .holding, progress: "14/40회차", detail: "9/1부터 홀딩"),
+        Member(name: "000", status: .active, progress: "1/50회차", detail: "마지막 9/2"),
+        Member(name: "000", status: .expired, progress: "20/20회차", detail: "8/28 만료"),
+        Member(name: "000", status: .active, progress: "19/30회차", detail: "마지막 9/3"),
+        Member(name: "000", status: .holding, progress: "6/20회차", detail: "8/20부터 홀딩"),
+        Member(name: "000", status: .expired, progress: "30/30회차", detail: "8/11 만료"),
+        Member(name: "000", status: .active, progress: "5/10회차", detail: "마지막 9/6"),
+        Member(name: "000", status: .expired, progress: "10/10회차", detail: "7/30 만료"),
+    ]
+
+    /// 갈래별 인원수 — 필터 칩의 숫자다
+    static let counts = Dictionary(grouping: placeholder, by: \.status).mapValues(\.count)
 }

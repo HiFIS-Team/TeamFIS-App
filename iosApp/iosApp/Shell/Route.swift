@@ -9,4 +9,8 @@ enum Route: Hashable {
     case memberDetail(Member)
     /// 알림함 — 헤더의 종을 누르면 들어온다
     case notifications
+    /// 회원 등록 — 회원 목록의 `+` 로 들어온다
+    case memberRegister
+    /// 소개한 회원 고르기 — 등록 화면 위에 한 겹 더 얹힌다
+    case referrerPick
 }

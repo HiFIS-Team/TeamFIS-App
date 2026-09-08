@@ -19,7 +19,8 @@ struct TabScreen: View {
             case .member:
                 MemberScreen(
                     onMember: { open(.memberDetail($0)) },
-                    onNotification: { open(.notifications) }
+                    onNotification: { open(.notifications) },
+                    onAddMember: { open(.memberRegister) }
                 )
             default:
                 VStack(spacing: 0) {
