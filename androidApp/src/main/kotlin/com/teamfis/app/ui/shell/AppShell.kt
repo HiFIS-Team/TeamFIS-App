@@ -29,7 +29,7 @@ import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberRegisterScreen
 import com.teamfis.app.ui.screens.MemberScreen
 import com.teamfis.app.ui.screens.NotificationScreen
-import com.teamfis.app.ui.screens.ReferrerPickScreen
+import com.teamfis.app.ui.screens.MemberPickScreen
 import com.teamfis.app.ui.theme.TeamFisColor
 
 /**
@@ -47,8 +47,9 @@ fun AppShell() {
     val nav = rememberNavController()
     // 상세로 넘길 회원. NavHost 인자로 객체를 실어 보낼 수 없어 셸이 들고 있는다
     var openedMember by remember { mutableStateOf<Member?>(null) }
-    // 등록 화면의 `소개한 회원` — 고르는 잎이 등록 잎 위에 또 얹히므로 셸이 들고 있는다
+    // 등록 화면이 고른 회원들 — 고르는 잎이 등록 잎 위에 또 얹히므로 셸이 들고 있는다
     var registerReferrer by remember { mutableStateOf<Member?>(null) }
+    var registerRenewMember by remember { mutableStateOf<Member?>(null) }
 
     NavHost(
         navController = nav,
@@ -69,8 +70,9 @@ fun AppShell() {
                 },
                 onNotification = { nav.navigateOnce(Route.NOTIFICATIONS) },
                 onAddMember = {
-                    // 지난번에 고른 소개 회원이 남아 있으면 안 된다
+                    // 지난번에 고른 회원이 남아 있으면 안 된다
                     registerReferrer = null
+                    registerRenewMember = null
                     nav.navigateOnce(Route.MEMBER_REGISTER)
                 },
             )
@@ -84,13 +86,29 @@ fun AppShell() {
                 referrer = registerReferrer,
                 onPickReferrer = { nav.navigateOnce(Route.REFERRER_PICK) },
                 onClearReferrer = { registerReferrer = null },
+                renewMember = registerRenewMember,
+                onPickRenewMember = { nav.navigateOnce(Route.RENEW_MEMBER_PICK) },
+                onClearRenewMember = { registerRenewMember = null },
             )
         }
         composable(Route.REFERRER_PICK) {
-            ReferrerPickScreen(
+            MemberPickScreen(
+                title = "소개한 회원",
+                description = "이 회원을 데려온 기존 회원을 골라주세요",
                 onBack = { nav.popBackStack() },
                 onPick = {
                     registerReferrer = it
+                    nav.popBackStack()
+                },
+            )
+        }
+        composable(Route.RENEW_MEMBER_PICK) {
+            MemberPickScreen(
+                title = "재등록할 회원",
+                description = "등록권을 하나 더 발급할 회원을 골라주세요",
+                onBack = { nav.popBackStack() },
+                onPick = {
+                    registerRenewMember = it
                     nav.popBackStack()
                 },
             )

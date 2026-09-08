@@ -20,8 +20,9 @@ import SwiftUI
 /// 셸이 같이 움직이면 하단 바가 왕복하는 게 눈에 걸린다.
 struct AppRoot: View {
     @State private var pages: [Route] = []
-    /// 등록 화면의 `소개한 회원` — 고르는 잎이 등록 잎 위에 또 얹히므로 뿌리가 들고 있는다
+    /// 등록 화면이 고른 회원들 — 고르는 잎이 등록 잎 위에 또 얹히므로 뿌리가 들고 있는다
     @State private var registerReferrer: Member?
+    @State private var registerRenewMember: Member?
     /// 가장자리 스와이프로 끌고 있는 거리
     @State private var drag: CGFloat = 0
 
@@ -37,8 +38,11 @@ struct AppRoot: View {
                 TeamFisColor.background.ignoresSafeArea()
 
                 TabShell(open: { route in
-                    // 지난번에 고른 소개 회원이 남아 있으면 안 된다
-                    if route == .memberRegister { registerReferrer = nil }
+                    // 지난번에 고른 회원이 남아 있으면 안 된다
+                    if route == .memberRegister {
+                        registerReferrer = nil
+                        registerRenewMember = nil
+                    }
                     open(route)
                 })
                     // 덮인 셸에는 손이 닿지 않는다
@@ -123,13 +127,28 @@ struct AppRoot: View {
                     onBack: back,
                     referrer: registerReferrer,
                     onPickReferrer: { open(.referrerPick) },
-                    onClearReferrer: { registerReferrer = nil }
+                    onClearReferrer: { registerReferrer = nil },
+                    renewMember: registerRenewMember,
+                    onPickRenewMember: { open(.renewMemberPick) },
+                    onClearRenewMember: { registerRenewMember = nil }
                 )
             case .referrerPick:
-                ReferrerPickScreen(
+                MemberPickScreen(
+                    title: "소개한 회원",
+                    description: "이 회원을 데려온 기존 회원을 골라주세요",
                     onBack: back,
                     onPick: {
                         registerReferrer = $0
+                        back()
+                    }
+                )
+            case .renewMemberPick:
+                MemberPickScreen(
+                    title: "재등록할 회원",
+                    description: "등록권을 하나 더 발급할 회원을 골라주세요",
+                    onBack: back,
+                    onPick: {
+                        registerRenewMember = $0
                         back()
                     }
                 )

@@ -12,15 +12,16 @@ struct MemberRegisterScreen: View {
     let referrer: Member?
     let onPickReferrer: () -> Void
     let onClearReferrer: () -> Void
+    /// 재등록할 회원. 같은 이유로 뿌리가 들고 있다
+    let renewMember: Member?
+    let onPickRenewMember: () -> Void
+    let onClearRenewMember: () -> Void
 
     @State private var renew = false
 
     @State private var name = ""
     @State private var phone = ""
     @State private var visitPath: VisitPath?
-
-    @State private var search = ""
-    @State private var selectedKey: Int?
 
     @State private var rounds = ""
     @State private var payment = ""
@@ -49,7 +50,7 @@ struct MemberRegisterScreen: View {
     /// 뭉뚱그려 "정보를 입력해주세요" 하면 넷 중 무엇이 빈지 알 수 없다.
     private var missingNow: String? {
         if renew {
-            if selectedKey == nil { return "재등록할 회원을 골라주세요" }
+            if renewMember == nil { return "재등록할 회원을 골라주세요" }
         } else {
             if name.trimmingCharacters(in: .whitespaces).isEmpty { return "성함을 입력해주세요" }
             if phone.trimmingCharacters(in: .whitespaces).isEmpty { return "연락처를 입력해주세요" }
@@ -160,59 +161,15 @@ struct MemberRegisterScreen: View {
     private var renewSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             FieldLabel("재등록할 회원")
-            FormField(text: $search, hint: "회원 이름 검색")
-            Spacer().frame(height: TeamFisSpacing.sm)
-
-            // TODO(서버): 내 담당 회원을 받아 쓴다. 자리 표시자는 이름이 다 `000` 이라 검색이 안 갈린다
-            let shown = Array(Member.placeholder.enumerated()).filter { _, member in
-                search.trimmingCharacters(in: .whitespaces).isEmpty || member.name.contains(search)
-            }
-
-            if shown.isEmpty {
-                Text("검색 결과가 없어요")
-                    .font(TeamFisFont.bodySm)
-                    .foregroundStyle(TeamFisColor.textTertiary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, TeamFisSpacing.xxl)
-            } else {
-                VStack(spacing: TeamFisSpacing.sm) {
-                    ForEach(shown, id: \.offset) { index, member in
-                        renewRow(index: index, member: member)
-                    }
-                }
-            }
-        }
-    }
-
-    private func renewRow(index: Int, member: Member) -> some View {
-        let isSelected = selectedKey == index
-        return Button(action: { selectedKey = index }) {
-            HStack(spacing: TeamFisSpacing.sm) {
-                Text("\(member.name) 회원님")
-                    .font(TeamFisFont.bodySm)
-                    .foregroundStyle(TeamFisColor.textPrimary)
-                Spacer(minLength: 0)
-                Text(member.progress)
-                    .font(TeamFisFont.caption.monospacedDigit())
-                    .foregroundStyle(TeamFisColor.textTertiary)
-                // 고른 줄에만 체크. 면 색만으로는 어두운 화면에서 잘 안 보인다
-                if isSelected {
-                    Image("ic_check")
-                        .renderingMode(.template)
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                        .foregroundStyle(TeamFisColor.brand)
-                }
-            }
-            .padding(.horizontal, TeamFisSpacing.lg)
-            .padding(.vertical, TeamFisSpacing.md)
-            .background(
-                RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
-                    .fill(isSelected ? TeamFisColor.surface2 : TeamFisColor.surface1)
+            // 소개한 회원과 같이 **골라 받는다** — 목록을 여기 깔면 등록권이
+            // 회원 수만큼 아래로 밀려서, 회원이 많을수록 폼이 길어진다
+            PickerField(
+                label: "회원 고르기",
+                value: renewMember.map { "\($0.name) 회원님" },
+                onTap: onPickRenewMember,
+                onClear: onClearRenewMember
             )
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
     }
 
     // MARK: - 어떤 등록인지

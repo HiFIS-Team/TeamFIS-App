@@ -31,13 +31,21 @@ import com.teamfis.app.ui.theme.TeamFisSpacing
 import com.teamfis.app.ui.theme.TeamFisType
 
 /**
- * 소개한 회원 고르기 — 등록 화면 **위에 한 겹 더 얹히는 잎**이다.
+ * 회원 고르기 — 등록 화면 **위에 한 겹 더 얹히는 잎**이다.
+ *
+ * `소개한 회원` 과 `재등록할 회원` 이 같이 쓴다. 하는 일이 똑같아서
+ * (담당 회원에서 한 명 골라 돌려주기) **제목과 안내만 갈아 끼운다.**
  *
  * 서버가 이름이 아니라 회원 id 를 받으므로 손으로 적게 두지 않는다.
  * 고르면 바로 닫히고 등록 화면으로 값이 돌아간다.
  */
 @Composable
-fun ReferrerPickScreen(onBack: () -> Unit, onPick: (Member) -> Unit) {
+fun MemberPickScreen(
+    title: String,
+    description: String,
+    onBack: () -> Unit,
+    onPick: (Member) -> Unit,
+) {
     var query by rememberSaveable { mutableStateOf("") }
     val shown = remember(query) {
         if (query.isBlank()) placeholderMembers else placeholderMembers.filter { it.name.contains(query) }
@@ -50,10 +58,10 @@ fun ReferrerPickScreen(onBack: () -> Unit, onPick: (Member) -> Unit) {
             .statusBarsPadding()
             .navigationBarsPadding(),
     ) {
-        DetailHeader(title = "소개한 회원", onBack = onBack)
+        DetailHeader(title = title, onBack = onBack)
 
         Text(
-            "이 회원을 데려온 기존 회원을 골라주세요",
+            description,
             style = TeamFisType.caption,
             color = TeamFisColor.TextTertiary,
             modifier = Modifier.padding(

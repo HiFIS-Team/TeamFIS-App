@@ -68,6 +68,7 @@ import java.time.ZoneOffset
  *
  * @param referrer 소개한 회원. **셸이 들고 있다** — 고르는 화면이 이 위에 또
  *   얹히므로, 여기서 들면 그 사이에 날아간다.
+ * @param renewMember 재등록할 회원. 같은 이유로 셸이 들고 있다.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,15 +77,15 @@ fun MemberRegisterScreen(
     referrer: Member?,
     onPickReferrer: () -> Unit,
     onClearReferrer: () -> Unit,
+    renewMember: Member?,
+    onPickRenewMember: () -> Unit,
+    onClearRenewMember: () -> Unit,
 ) {
     var renew by rememberSaveable { mutableStateOf(false) }
 
     var name by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
     var visitPath by rememberSaveable { mutableStateOf<VisitPath?>(null) }
-
-    var search by rememberSaveable { mutableStateOf("") }
-    var selectedName by rememberSaveable { mutableStateOf<String?>(null) }
 
     var rounds by rememberSaveable { mutableStateOf("") }
     var payment by rememberSaveable { mutableStateOf("") }
@@ -112,7 +113,7 @@ fun MemberRegisterScreen(
      * 뭉뚱그려 "정보를 입력해주세요" 하면 넷 중 무엇이 빈지 알 수 없다.
      */
     val missingNow: String? = when {
-        renew && selectedName == null -> "재등록할 회원을 골라주세요"
+        renew && renewMember == null -> "재등록할 회원을 골라주세요"
         !renew && name.isBlank() -> "성함을 입력해주세요"
         !renew && phone.isBlank() -> "연락처를 입력해주세요"
         !renew && visitPath == null -> "방문 경로를 골라주세요"
@@ -191,12 +192,13 @@ fun MemberRegisterScreen(
 
             if (renew) {
                 FieldLabel("재등록할 회원")
-                FormField(search, { search = it }, hint = "회원 이름 검색")
-                Spacer(Modifier.height(TeamFisSpacing.sm))
-                RenewMemberList(
-                    query = search,
-                    selectedKey = selectedName,
-                    onSelect = { selectedName = it },
+                // 소개한 회원과 같이 **골라 받는다** — 목록을 여기 깔면 등록권이
+                // 회원 수만큼 아래로 밀려서, 회원이 많을수록 폼이 길어진다
+                PickerField(
+                    label = "회원 고르기",
+                    value = renewMember?.let { "${it.name} 회원님" },
+                    onTap = onPickRenewMember,
+                    onClear = onClearRenewMember,
                 )
             } else {
                 FieldLabel("회원 정보")
@@ -298,78 +300,6 @@ fun MemberRegisterScreen(
             },
         ) {
             DatePicker(state = state)
-        }
-    }
-}
-
-/** 재등록에서 고를 회원 줄 — 이름으로 걸러진다. */
-@Composable
-private fun RenewMemberList(
-    query: String,
-    selectedKey: String?,
-    onSelect: (String) -> Unit,
-) {
-    // TODO(서버): 내 담당 회원을 받아 쓴다. 자리 표시자는 이름이 다 `000` 이라 검색이 안 갈린다
-    val shown = remember(query) {
-        placeholderMembers.withIndex().filter { (_, m) ->
-            query.isBlank() || m.name.contains(query)
-        }
-    }
-
-    if (shown.isEmpty()) {
-        Text(
-            "검색 결과가 없어요",
-            style = TeamFisType.bodySm,
-            color = TeamFisColor.TextTertiary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = TeamFisSpacing.xxl),
-            textAlign = TextAlign.Center,
-        )
-        return
-    }
-
-    Column(verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.sm)) {
-        shown.forEach { (index, member) ->
-            val key = index.toString()
-            val isSelected = selectedKey == key
-            val interaction = remember(key) { MutableInteractionSource() }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(TeamFisRadius.card)
-                    .background(if (isSelected) TeamFisColor.Surface2 else TeamFisColor.Surface1)
-                    .clickable(
-                        interactionSource = interaction,
-                        indication = null,
-                        onClick = { onSelect(key) },
-                    )
-                    .padding(horizontal = TeamFisSpacing.lg, vertical = TeamFisSpacing.md),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    "${member.name} 회원님",
-                    style = TeamFisType.bodySm,
-                    color = TeamFisColor.TextPrimary,
-                    modifier = Modifier.weight(1f),
-                )
-                Text(
-                    member.progress,
-                    style = TeamFisType.caption.copy(fontFeatureSettings = "tnum"),
-                    color = TeamFisColor.TextTertiary,
-                )
-                // 고른 줄에만 체크. 면 색만으로는 어두운 화면에서 잘 안 보인다
-                if (isSelected) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check),
-                        contentDescription = "선택됨",
-                        tint = TeamFisColor.Brand,
-                        modifier = Modifier
-                            .padding(start = TeamFisSpacing.sm)
-                            .size(16.dp),
-                    )
-                }
-            }
         }
     }
 }

@@ -22,6 +22,9 @@ object Route {
 
     /** 소개한 회원 고르기 — 등록 화면 위에 한 겹 더 얹힌다 */
     const val REFERRER_PICK = "referrer_pick"
+
+    /** 재등록할 회원 고르기 — 소개한 회원과 같은 화면을 쓴다 */
+    const val RENEW_MEMBER_PICK = "renew_member_pick"
 }
 
 /**
