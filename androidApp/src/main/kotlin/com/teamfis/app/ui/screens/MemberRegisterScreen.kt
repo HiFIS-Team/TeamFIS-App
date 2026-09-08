@@ -156,10 +156,10 @@ fun MemberRegisterScreen(
 
             // **어떤 등록인지부터 정한다** (2026-09-08 대표 지시). 켜면 아래 칸들이
             // 지난 실적으로 잡히므로, 다 적고 나서 묻는 것보다 먼저 묻는 게 맞다.
-            // 딸린 칸(실제 결제일·이미 받은 회차)도 같이 올렸다 — 토글만 올리면
-            // 켰을 때 어디에 칸이 생겼는지 못 찾는다
+            // 켜면 생기는 칸은 **등록권 안에** 붙는다 — 결제일도 받은 회차도
+            // 등록권에 딸린 값이라 거기 있어야 읽힌다
             ToggleRow(
-                title = "예전에 등록한 회원",
+                title = "기존 회원",
                 description = "앱을 켜기 전에 등록한 건을 뒤늦게 넣을 때",
                 checked = existing,
                 onCheckedChange = {
@@ -171,22 +171,6 @@ fun MemberRegisterScreen(
                     }
                 },
             )
-
-            if (existing) {
-                Spacer(Modifier.height(TeamFisSpacing.sm))
-                PickerField(
-                    label = "실제 결제일",
-                    value = purchasedAt?.let { dateLabel(it) },
-                    onTap = { datePickerOpen = true },
-                )
-                Spacer(Modifier.height(TeamFisSpacing.sm))
-                FormField(
-                    used,
-                    { used = it },
-                    hint = "이미 받은 회차 (예: 5)",
-                    keyboardType = KeyboardType.Number,
-                )
-            }
 
             Spacer(Modifier.height(TeamFisSpacing.xxl))
 
@@ -234,12 +218,30 @@ fun MemberRegisterScreen(
             Spacer(Modifier.height(TeamFisSpacing.xxl))
 
             FieldLabel("등록권")
+            if (existing) {
+                // 언제 결제한 건인지가 이 등록권의 뜻을 정한다 — 회차보다 먼저 묻는다
+                PickerField(
+                    label = "실제 결제일",
+                    value = purchasedAt?.let { dateLabel(it) },
+                    onTap = { datePickerOpen = true },
+                )
+                Spacer(Modifier.height(TeamFisSpacing.sm))
+            }
             FormField(
                 rounds,
                 { rounds = it },
                 hint = "회차 (예: 30)",
                 keyboardType = KeyboardType.Number,
             )
+            if (existing) {
+                Spacer(Modifier.height(TeamFisSpacing.sm))
+                FormField(
+                    used,
+                    { used = it },
+                    hint = "이미 받은 회차 (예: 5)",
+                    keyboardType = KeyboardType.Number,
+                )
+            }
             Spacer(Modifier.height(TeamFisSpacing.sm))
             FormField(
                 payment,
