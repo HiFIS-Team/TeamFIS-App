@@ -226,7 +226,7 @@ struct MemberRegisterScreen: View {
                     .font(TeamFisFont.bodySm)
                     .foregroundStyle(TeamFisColor.textSecondary)
                 Spacer(minLength: 0)
-                Text(unitPrice > 0 ? "\(comma(unitPrice))원" : "—")
+                Text(unitPrice > 0 ? "\(unitPrice.commaString)원" : "—")
                     .font(TeamFisFont.bodySm.monospacedDigit())
                     .foregroundStyle(unitPrice > 0 ? TeamFisColor.brand : TeamFisColor.textTertiary)
             }
@@ -256,12 +256,5 @@ struct MemberRegisterScreen: View {
     private func dateLabel(_ date: Date) -> String {
         let parts = Calendar.current.dateComponents([.year, .month, .day], from: date)
         return "\(parts.year ?? 0). \(parts.month ?? 0). \(parts.day ?? 0)"
-    }
-
-    /// `1,234,567`
-    private func comma(_ value: Int) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }

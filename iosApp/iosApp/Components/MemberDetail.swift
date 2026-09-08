@@ -7,15 +7,43 @@ struct MemberDetail {
     let gender: String
     let phone: String
     let birth: String
+    /// 등록 때 받은 값 — 어떻게 알고 왔나
+    let visitPath: VisitPath?
+    /// 등록 때 받은 값 — 데려온 회원. 없으면 nil
+    let referrer: String?
     /// 등록 상품. 여러 개면 위 줄에서 골라 가며 본다
     let products: [MemberProduct]
 }
 
 /// 등록 상품 하나 — 회차가 이 밑에 달린다.
+///
+/// **결제액·회차는 사람이 아니라 여기 붙는다.** 회원 하나가 등록권을 여럿 들 수 있어서,
+/// 프로필에 결제액을 적으면 어느 등록권 것인지 알 수 없다.
 struct MemberProduct: Identifiable {
     let id = UUID()
     let name: String
+    /// 등록 회차
+    let rounds: Int
+    /// 결제액 (원)
+    let payment: Int
+    /// `2026. 3. 10.`
+    let registeredAt: String
     let sessions: [MemberSession]
+
+    /// 회당 단가 — 등록 화면과 같은 셈이다 (결제액 ÷ 회차)
+    var unitPrice: Int {
+        guard rounds > 0, payment > 0 else { return 0 }
+        return Int((Double(payment) / Double(rounds)).rounded())
+    }
+}
+
+extension Int {
+    /// `1,234,567`
+    var commaString: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
+    }
 }
 
 /// 회차 한 건.
@@ -102,8 +130,14 @@ struct MemberProfile: View {
             .padding(.trailing, Header.screenHorizontal - (Header.touchTarget - Header.icon) / 2)
 
             VStack(spacing: TeamFisSpacing.md) {
-                InfoRow(label: "휴대폰 번호", value: member.phone)
-                InfoRow(label: "생년월일", value: member.birth)
+                DetailInfoRow(label: "휴대폰 번호", value: member.phone)
+                DetailInfoRow(label: "생년월일", value: member.birth)
+                // 등록 때 받은 값 중 **사람에 붙는 것**만 여기 온다
+                DetailInfoRow(label: "방문 경로", value: member.visitPath?.label ?? "—")
+                DetailInfoRow(
+                    label: "소개한 회원",
+                    value: member.referrer.map { "\($0) 회원님" } ?? "—"
+                )
             }
             .padding(.top, TeamFisSpacing.xl)
             .padding(.horizontal, TeamFisSpacing.screenHorizontal)
@@ -111,8 +145,8 @@ struct MemberProfile: View {
     }
 }
 
-/// 이름표는 왼쪽, 값은 오른쪽 끝.
-private struct InfoRow: View {
+/// 이름표는 왼쪽, 값은 오른쪽 끝. 프로필과 등록권이 같이 쓴다.
+struct DetailInfoRow: View {
     let label: String
     let value: String
 

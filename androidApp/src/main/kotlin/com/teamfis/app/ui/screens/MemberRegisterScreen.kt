@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
 import com.teamfis.app.ui.components.BottomActionButton
 import com.teamfis.app.ui.components.ChoiceChips
+import com.teamfis.app.ui.components.comma
 import com.teamfis.app.ui.components.FieldLabel
 import com.teamfis.app.ui.components.FormField
 import com.teamfis.app.ui.components.Member
@@ -335,10 +336,6 @@ private fun UnitPriceRow(unitPrice: Int, modifier: Modifier = Modifier) {
         )
     }
 }
-
-/** `1,234,567` */
-private fun comma(value: Int): String =
-    value.toString().reversed().chunked(3).joinToString(",").reversed()
 
 /** `2026. 3. 14` */
 private fun dateLabel(millis: Long): String {

@@ -47,13 +47,27 @@ struct MemberDetailScreen: View {
                     )
                     .padding(.top, TeamFisSpacing.sm)
 
+                    // **이 등록권에 붙는 값** — 상품을 바꾸면 같이 바뀐다.
+                    // 결제액을 프로필에 적으면 등록권이 여럿일 때 어느 것인지 알 수 없다
+                    let product = detail.products[productIndex]
                     VStack(spacing: TeamFisSpacing.md) {
-                        ForEach(detail.products[productIndex].sessions) { session in
+                        DetailInfoRow(label: "등록일", value: product.registeredAt)
+                        DetailInfoRow(label: "결제액", value: "\(product.payment.commaString)원")
+                        DetailInfoRow(
+                            label: "회당 단가",
+                            value: product.unitPrice > 0 ? "\(product.unitPrice.commaString)원" : "—"
+                        )
+                    }
+                    .padding(.top, TeamFisSpacing.sm)
+                    .padding(.horizontal, TeamFisSpacing.screenHorizontal)
+
+                    VStack(spacing: TeamFisSpacing.md) {
+                        ForEach(product.sessions) { session in
                             // 회차 처리는 서버가 붙어야 한다
                             SessionCard(session: session)
                         }
                     }
-                    .padding(.top, TeamFisSpacing.sm)
+                    .padding(.top, TeamFisSpacing.xl)
                     .padding(.horizontal, TeamFisSpacing.screenHorizontal)
                 }
                 .padding(.bottom, TeamFisSpacing.xxxl)
@@ -69,9 +83,14 @@ struct MemberDetailScreen: View {
             gender: "남",
             phone: "010-1234-4564",
             birth: "1999. 12. 12.",
+            visitPath: .referral,
+            referrer: "000",
             products: [
                 MemberProduct(
                     name: "얼리버드 20회",
+                    rounds: 20,
+                    payment: 1_500_000,
+                    registeredAt: "2026. 3. 10.",
                     sessions: [
                         MemberSession(round: 3, at: "2026.03.21 (토) 10:00", status: .scheduled),
                         MemberSession(
@@ -86,6 +105,9 @@ struct MemberDetailScreen: View {
                 ),
                 MemberProduct(
                     name: "PT 30회",
+                    rounds: 30,
+                    payment: 2_100_000,
+                    registeredAt: "2025. 11. 2.",
                     sessions: [
                         MemberSession(
                             round: 30, at: "2026.02.27 (금) 20:00", status: .done,

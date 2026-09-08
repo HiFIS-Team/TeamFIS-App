@@ -21,6 +21,8 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.ui.components.BodyPart
+import com.teamfis.app.ui.components.DetailInfoRow
+import com.teamfis.app.ui.components.comma
 import com.teamfis.app.ui.components.Member
 import com.teamfis.app.ui.components.MemberDetail
 import com.teamfis.app.ui.components.MemberProduct
@@ -30,6 +32,7 @@ import com.teamfis.app.ui.components.ProductSelector
 import com.teamfis.app.ui.shell.DetailHeader
 import com.teamfis.app.ui.components.SessionCard
 import com.teamfis.app.ui.components.SessionStatus
+import com.teamfis.app.ui.components.VisitPath
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisSpacing
 
@@ -88,16 +91,35 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
                 modifier = Modifier.padding(top = TeamFisSpacing.sm),
             )
 
+            // **이 등록권에 붙는 값** — 상품을 바꾸면 같이 바뀐다.
+            // 결제액을 프로필에 적으면 등록권이 여럿일 때 어느 것인지 알 수 없다
+            val product = detail.products[productIndex]
             Column(
                 modifier = Modifier.padding(
                     top = TeamFisSpacing.sm,
+                    start = TeamFisSpacing.screenHorizontal,
+                    end = TeamFisSpacing.screenHorizontal,
+                ),
+                verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
+            ) {
+                DetailInfoRow("등록일", product.registeredAt)
+                DetailInfoRow("결제액", "${comma(product.payment)}원")
+                DetailInfoRow(
+                    "회당 단가",
+                    if (product.unitPrice > 0) "${comma(product.unitPrice)}원" else "—",
+                )
+            }
+
+            Column(
+                modifier = Modifier.padding(
+                    top = TeamFisSpacing.xl,
                     start = TeamFisSpacing.screenHorizontal,
                     end = TeamFisSpacing.screenHorizontal,
                     bottom = TeamFisSpacing.xxxl,
                 ),
                 verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
             ) {
-                detail.products[productIndex].sessions.forEach { session ->
+                product.sessions.forEach { session ->
                     // 회차 처리는 서버가 붙어야 한다
                     SessionCard(session, onNoShow = {}, onDone = {})
                 }
@@ -115,9 +137,14 @@ private fun placeholderDetail(member: Member) = MemberDetail(
     gender = "남",
     phone = "010-1234-4564",
     birth = "1999. 12. 12.",
+    visitPath = VisitPath.Referral,
+    referrer = "000",
     products = listOf(
         MemberProduct(
             name = "얼리버드 20회",
+            rounds = 20,
+            payment = 1_500_000,
+            registeredAt = "2026. 3. 10.",
             sessions = listOf(
                 MemberSession(3, "2026.03.21 (토) 10:00", SessionStatus.Scheduled),
                 MemberSession(
@@ -135,6 +162,9 @@ private fun placeholderDetail(member: Member) = MemberDetail(
         ),
         MemberProduct(
             name = "PT 30회",
+            rounds = 30,
+            payment = 2_100_000,
+            registeredAt = "2025. 11. 2.",
             sessions = listOf(
                 MemberSession(
                     30, "2026.02.27 (금) 20:00", SessionStatus.Done,
