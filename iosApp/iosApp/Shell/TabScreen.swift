@@ -6,6 +6,7 @@ import SharedKit
 /// **헤더는 화면이 들고 있다** — 셸이 아니라 화면마다 헤더가 다르기 때문이다.
 struct TabScreen: View {
     let tab: TabItem
+    let open: (Route) -> Void
 
     var body: some View {
         ZStack {
@@ -16,7 +17,7 @@ struct TabScreen: View {
             case .home:
                 HomeScreen()
             case .member:
-                MemberScreen()
+                MemberScreen(onMember: { open(.memberDetail($0)) })
             default:
                 VStack(spacing: 0) {
                     AppHeader()

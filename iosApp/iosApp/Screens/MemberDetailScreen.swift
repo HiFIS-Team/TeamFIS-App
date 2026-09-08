@@ -7,6 +7,9 @@ import SwiftUI
 ///
 /// 순서는 **사람 → 등록 → 회차**다. 누구인지 알고, 뭘 끊었는지 보고,
 /// 그 아래에서 회차를 처리한다.
+///
+/// **잎 화면이다** — 뿌리(`AppRoot`)가 오른쪽에서 밀어 넣어 하단 유리 바까지 덮는다.
+/// 그래서 바 몫의 아래 여백(`bottomBarClearance`)이 필요 없다.
 struct MemberDetailScreen: View {
     let member: Member
     let onBack: () -> Void
@@ -53,8 +56,7 @@ struct MemberDetailScreen: View {
                     .padding(.top, TeamFisSpacing.sm)
                     .padding(.horizontal, TeamFisSpacing.screenHorizontal)
                 }
-                // 접힌 유리 바가 마지막 카드를 덮지 않게 (값의 근거는 토큰 주석에)
-                .padding(.bottom, TeamFisSize.bottomBarClearance)
+                .padding(.bottom, TeamFisSpacing.xxxl)
             }
         }
     }

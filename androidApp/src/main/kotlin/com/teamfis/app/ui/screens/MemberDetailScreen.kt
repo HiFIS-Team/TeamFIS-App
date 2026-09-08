@@ -1,13 +1,14 @@
 package com.teamfis.app.ui.screens
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -40,6 +41,9 @@ import com.teamfis.app.ui.theme.TeamFisSpacing
  *
  * 순서는 **사람 → 등록 → 회차**다. 누구인지 알고, 뭘 끊었는지 보고,
  * 그 아래에서 회차를 처리한다.
+ *
+ * **잎 화면이다** — 셸의 `NavHost` 가 오른쪽에서 밀어 넣어 하단 탭 바까지 덮는다.
+ * 셸 밖이라 시스템 바 여백도 스스로 챙긴다. 기기 뒤로가기는 `NavHost` 가 받는다.
  */
 @Composable
 fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
@@ -47,54 +51,56 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
     var productIndex by remember { mutableIntStateOf(0) }
     var productExpanded by remember { mutableStateOf(false) }
 
-    // 기기 뒤로가기도 목록으로 돌아오게 한다
-    BackHandler(onBack = onBack)
-
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .background(TeamFisColor.Background)
+            .statusBarsPadding()
+            .navigationBarsPadding(),
     ) {
+        // 머리는 고정, 아래만 흐른다 (iOS 와 같은 모양)
         MemberDetailTopBar(onBack = onBack)
 
-        MemberProfile(detail, modifier = Modifier.padding(top = TeamFisSpacing.sm))
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            MemberProfile(detail, modifier = Modifier.padding(top = TeamFisSpacing.sm))
 
-        Box(
-            Modifier
-                .padding(
-                    top = TeamFisSpacing.xl,
+            Box(
+                Modifier
+                    .padding(
+                        top = TeamFisSpacing.xl,
+                        start = TeamFisSpacing.screenHorizontal,
+                        end = TeamFisSpacing.screenHorizontal,
+                    )
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(TeamFisColor.Divider),
+            )
+
+            ProductSelector(
+                products = detail.products,
+                selectedIndex = productIndex,
+                expanded = productExpanded,
+                onToggle = { productExpanded = !productExpanded },
+                onSelect = {
+                    productIndex = it
+                    productExpanded = false
+                },
+                modifier = Modifier.padding(top = TeamFisSpacing.sm),
+            )
+
+            Column(
+                modifier = Modifier.padding(
+                    top = TeamFisSpacing.sm,
                     start = TeamFisSpacing.screenHorizontal,
                     end = TeamFisSpacing.screenHorizontal,
-                )
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(TeamFisColor.Divider),
-        )
-
-        ProductSelector(
-            products = detail.products,
-            selectedIndex = productIndex,
-            expanded = productExpanded,
-            onToggle = { productExpanded = !productExpanded },
-            onSelect = {
-                productIndex = it
-                productExpanded = false
-            },
-            modifier = Modifier.padding(top = TeamFisSpacing.sm),
-        )
-
-        Column(
-            modifier = Modifier.padding(
-                top = TeamFisSpacing.sm,
-                start = TeamFisSpacing.screenHorizontal,
-                end = TeamFisSpacing.screenHorizontal,
-                bottom = TeamFisSpacing.xxxl,
-            ),
-            verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
-        ) {
-            detail.products[productIndex].sessions.forEach { session ->
-                // 회차 처리는 서버가 붙어야 한다
-                SessionCard(session, onNoShow = {}, onDone = {})
+                    bottom = TeamFisSpacing.xxxl,
+                ),
+                verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
+            ) {
+                detail.products[productIndex].sessions.forEach { session ->
+                    // 회차 처리는 서버가 붙어야 한다
+                    SessionCard(session, onNoShow = {}, onDone = {})
+                }
             }
         }
     }

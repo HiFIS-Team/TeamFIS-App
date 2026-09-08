@@ -7,7 +7,13 @@ import SwiftUI
 ///
 /// `Tab` API 는 iOS 18 부터라, 그 아래에서는 `.tabItem` 으로 떨어진다
 /// (검색이 바 안에 다섯 번째 탭으로 들어간다).
+///
+/// **바 가시성을 상태로 토글하지 않는다.** 잎이 덮으므로 끌 일이 없다.
 struct TabShell: View {
+    /// 잎 화면을 열어 달라는 요청 — 뿌리(`AppRoot`)가 받는다.
+    /// ⚠️ 이름이 C 표준함수 `open` 과 겹친다 — **값으로 넘길 때는 `self.open`** 이라고 써야 한다
+    let open: (Route) -> Void
+
     @State private var selection: TabItem = .home
     @State private var query = ""
 
@@ -27,7 +33,7 @@ struct TabShell: View {
         TabView(selection: $selection) {
             ForEach(TabItem.main, id: \.self) { tab in
                 Tab(tab.label, image: iconName(tab), value: tab) {
-                    TabScreen(tab: tab)
+                    TabScreen(tab: tab, open: self.open)
                 }
             }
 
@@ -50,7 +56,7 @@ struct TabShell: View {
     private var legacyTabs: some View {
         TabView(selection: $selection) {
             ForEach(TabItem.allCases, id: \.self) { tab in
-                TabScreen(tab: tab)
+                TabScreen(tab: tab, open: self.open)
                     .tabItem {
                         Image(iconName(tab)).accessibilityLabel(tab.label)
                     }

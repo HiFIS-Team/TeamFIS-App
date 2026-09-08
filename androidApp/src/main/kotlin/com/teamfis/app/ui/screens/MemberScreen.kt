@@ -33,18 +33,12 @@ import com.teamfis.app.ui.theme.TeamFisType
  * 목록이 수십 줄로 길어지므로 필터 줄은 **위에 고정**한다 — 같이 흘러가면
  * 아래에서 갈래를 바꾸려고 맨 위까지 되돌아가야 한다.
  *
- * 한 명을 누르면 [MemberDetailScreen] 이 **이 자리를 통째로 덮는다.** 상세는
- * 워드마크 헤더 대신 뒤로가기를 그리므로 목록과 헤더를 같이 쓸 수 없다.
+ * 한 명을 누르면 상세가 열리는데, **이 화면이 상세를 그리지 않는다.** 상세는
+ * 하단 탭 바까지 덮는 잎 화면이라 셸만 띄울 수 있다 — 여기서는 요청만 한다.
  */
 @Composable
-fun MemberScreen() {
+fun MemberScreen(onMember: (Member) -> Unit = {}) {
     var filter by rememberSaveable { mutableStateOf<MemberStatus?>(null) }
-    var opened by remember { mutableStateOf<Member?>(null) }
-
-    opened?.let { member ->
-        MemberDetailScreen(member, onBack = { opened = null })
-        return
-    }
 
     val counts = remember { placeholderMembers.groupingBy { it.status }.eachCount() }
     val shown = remember(filter) {
@@ -73,7 +67,7 @@ fun MemberScreen() {
             LazyColumn(contentPadding = PaddingValues(bottom = TeamFisSpacing.xxxl)) {
                 itemsIndexed(shown) { index, member ->
                     if (index > 0) MemberDivider()
-                    MemberRow(member, onClick = { opened = member })
+                    MemberRow(member, onClick = { onMember(member) })
                 }
             }
         }
