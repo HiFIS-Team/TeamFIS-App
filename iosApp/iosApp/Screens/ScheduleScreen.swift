@@ -14,6 +14,7 @@ import SwiftUI
 struct ScheduleScreen: View {
     var onClass: (ScheduleClass) -> Void = { _ in }
     var onNotification: () -> Void = {}
+    var onMy: () -> Void = {}
 
     @State private var selected = Date()
     @State private var month = Date()
@@ -21,7 +22,7 @@ struct ScheduleScreen: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AppHeader(onNotification: onNotification)
+            AppHeader(onNotification: onNotification, onMy: onMy)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {

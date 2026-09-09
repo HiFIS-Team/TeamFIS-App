@@ -33,6 +33,7 @@ import com.teamfis.app.ui.screens.ClassSignScreen
 import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberRegisterScreen
 import com.teamfis.app.ui.screens.MemberScreen
+import com.teamfis.app.ui.screens.MyScreen
 import com.teamfis.app.ui.screens.ScheduleDetailScreen
 import com.teamfis.app.ui.screens.ScheduleScreen
 import com.teamfis.app.ui.screens.NotificationScreen
@@ -95,6 +96,7 @@ fun AppShell() {
                     nav.navigateOnce(Route.CLASS_SIGN)
                 },
                 onNotification = { nav.navigateOnce(Route.NOTIFICATIONS) },
+                onMy = { nav.navigateOnce(Route.MY) },
                 onAddMember = {
                     // 지난번에 고른 회원이 남아 있으면 안 된다
                     registerReferrer = null
@@ -133,6 +135,9 @@ fun AppShell() {
             signingClass?.let {
                 ClassSignScreen(todo = it, onBack = { nav.popBackStack() })
             }
+        }
+        composable(Route.MY) {
+            MyScreen(onBack = { nav.popBackStack() })
         }
         composable(Route.NOTIFICATIONS) {
             NotificationScreen(onBack = { nav.popBackStack() })
@@ -195,6 +200,7 @@ private fun TabShell(
     onLogMember: (Member) -> Unit,
     onSign: (ClassTodo) -> Unit,
     onNotification: () -> Unit,
+    onMy: () -> Unit,
     onAddMember: () -> Unit,
 ) {
     // ⚠️ `remember` 면 안 된다. 잎이 덮는 동안 셸은 컴포지션에서 빠지므로
@@ -214,20 +220,23 @@ private fun TabShell(
                 BottomTab.Schedule -> ScheduleScreen(
                     onClass = onClass,
                     onNotification = onNotification,
+                    onMy = onMy,
                 )
                 BottomTab.Member -> MemberScreen(
                     onMember = onMember,
                     onNotification = onNotification,
+                    onMy = onMy,
                     onAddMember = onAddMember,
                 )
                 BottomTab.Class -> ClassScreen(
                     onMember = onLogMember,
                     onSign = onSign,
                     onNotification = onNotification,
+                    onMy = onMy,
                 )
                 // 홈은 나머지가 다 찬 뒤에 마지막으로 짠다
                 else -> Column(Modifier.fillMaxSize()) {
-                    AppHeader(onNotification = onNotification)
+                    AppHeader(onNotification = onNotification, onMy = onMy)
 
                     Box(
                         modifier = Modifier.fillMaxSize(),

@@ -53,6 +53,7 @@ fun ClassScreen(
     onMember: (Member) -> Unit = {},
     onSign: (ClassTodo) -> Unit = {},
     onNotification: () -> Unit = {},
+    onMy: () -> Unit = {},
 ) {
     var filter by rememberSaveable { mutableStateOf(ClassFilter.Log) }
 
@@ -63,7 +64,7 @@ fun ClassScreen(
     )
 
     Column(Modifier.fillMaxSize()) {
-        AppHeader(onNotification = onNotification)
+        AppHeader(onNotification = onNotification, onMy = onMy)
 
         ClassFilterBar(
             selected = filter,

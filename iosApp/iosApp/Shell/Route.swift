@@ -15,6 +15,8 @@ enum Route: Hashable {
     case classLog(ClassTodo)
     /// 세션 사인 — 수업 탭의 사인 목록에서 한 건을 누르면 들어온다
     case classSign(ClassTodo)
+    /// 마이 — 헤더의 사람 아이콘을 누르면 들어온다
+    case my
     /// 알림함 — 헤더의 종을 누르면 들어온다
     case notifications
     /// 회원 등록 — 회원 목록의 `+` 로 들어온다

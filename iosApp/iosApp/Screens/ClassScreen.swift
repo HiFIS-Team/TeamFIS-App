@@ -15,6 +15,7 @@ struct ClassScreen: View {
     var onMember: (Member) -> Void = { _ in }
     var onSign: (ClassTodo) -> Void = { _ in }
     var onNotification: () -> Void = {}
+    var onMy: () -> Void = {}
 
     @State private var filter: ClassFilter = .log
 
@@ -24,7 +25,7 @@ struct ClassScreen: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AppHeader(onNotification: onNotification)
+            AppHeader(onNotification: onNotification, onMy: onMy)
 
             ClassFilterBar(selected: filter, counts: counts, onSelect: { filter = $0 })
                 .padding(.top, TeamFisSpacing.sm)

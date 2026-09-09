@@ -53,6 +53,7 @@ fun MemberScreen(
     onMember: (Member) -> Unit = {},
     onNotification: () -> Unit = {},
     onAddMember: () -> Unit = {},
+    onMy: () -> Unit = {},
 ) {
     var filter by rememberSaveable { mutableStateOf<MemberStatus?>(null) }
 
@@ -63,7 +64,7 @@ fun MemberScreen(
 
     Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize()) {
-        AppHeader(onNotification = onNotification)
+        AppHeader(onNotification = onNotification, onMy = onMy)
 
         MemberFilterBar(
             selected = filter,

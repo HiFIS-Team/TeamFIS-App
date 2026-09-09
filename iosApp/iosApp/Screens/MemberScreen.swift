@@ -17,13 +17,14 @@ import SwiftUI
 struct MemberScreen: View {
     var onMember: (Member) -> Void = { _ in }
     var onNotification: () -> Void = {}
+    var onMy: () -> Void = {}
     var onAddMember: () -> Void = {}
 
     @State private var filter: MemberStatus?
 
     var body: some View {
         VStack(spacing: 0) {
-            AppHeader(onNotification: onNotification)
+            AppHeader(onNotification: onNotification, onMy: onMy)
 
             MemberFilterBar(
                 selected: filter,

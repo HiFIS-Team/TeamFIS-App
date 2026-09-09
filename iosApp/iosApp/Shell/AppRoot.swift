@@ -132,6 +132,8 @@ struct AppRoot: View {
                 ClassLogScreen(todo: todo, onBack: back)
             case .classSign(let todo):
                 ClassSignScreen(todo: todo, onBack: back)
+            case .my:
+                MyScreen(onBack: back)
             case .notifications:
                 NotificationScreen(onBack: back)
             case .memberRegister:

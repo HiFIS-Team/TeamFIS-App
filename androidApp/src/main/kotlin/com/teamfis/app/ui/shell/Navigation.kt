@@ -26,6 +26,9 @@ object Route {
     /** 세션 사인 — 수업 탭의 사인 목록에서 한 건을 누르면 들어온다 */
     const val CLASS_SIGN = "class_sign"
 
+    /** 마이 — 헤더의 사람 아이콘을 누르면 들어온다 */
+    const val MY = "my"
+
     /** 알림함 — 헤더의 종을 누르면 들어온다 */
     const val NOTIFICATIONS = "notifications"
 

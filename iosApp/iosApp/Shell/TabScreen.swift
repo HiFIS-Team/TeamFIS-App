@@ -17,23 +17,29 @@ struct TabScreen: View {
             case .schedule:
                 ScheduleScreen(
                     onClass: { open(.scheduleDetail($0)) },
-                    onNotification: { open(.notifications) }
+                    onNotification: { open(.notifications) },
+                    onMy: { open(.my) }
                 )
             case .lesson:
                 ClassScreen(
                     onMember: { open(.classMember($0)) },
                     onSign: { open(.classSign($0)) },
-                    onNotification: { open(.notifications) }
+                    onNotification: { open(.notifications) },
+                    onMy: { open(.my) }
                 )
             case .member:
                 MemberScreen(
                     onMember: { open(.memberDetail($0)) },
                     onNotification: { open(.notifications) },
+                    onMy: { open(.my) },
                     onAddMember: { open(.memberRegister) }
                 )
             default:
                 VStack(spacing: 0) {
-                    AppHeader(onNotification: { open(.notifications) })
+                    AppHeader(
+                        onNotification: { open(.notifications) },
+                        onMy: { open(.my) }
+                    )
 
                     Spacer()
                     Text(tab.label)

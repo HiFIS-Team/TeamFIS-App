@@ -56,13 +56,14 @@ import com.teamfis.app.ui.theme.TeamFisType
 fun ScheduleScreen(
     onClass: (ScheduleClass) -> Unit = {},
     onNotification: () -> Unit = {},
+    onMy: () -> Unit = {},
 ) {
     var selected by remember { mutableStateOf(java.time.LocalDate.now()) }
     var month by remember { mutableStateOf(java.time.LocalDate.now()) }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Column(Modifier.fillMaxSize()) {
-        AppHeader(onNotification = onNotification)
+        AppHeader(onNotification = onNotification, onMy = onMy)
 
         Column(
             Modifier
