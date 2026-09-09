@@ -140,16 +140,15 @@ fun SignaturePad(
             },
         contentAlignment = Alignment.Center,
     ) {
-        // 빈 판은 그릴 수 있는 자리로 안 보인다. 한 줄만 두고 첫 획에 사라진다
+        // 빈 판은 그릴 수 있는 자리로 안 보인다. 한 줄만 두고 첫 획에 사라진다.
+        // **잠겼으면 무엇을 해야 하는지로 바뀐다** (2026-09-09 대표 지시) —
+        // 어두운 판만 있으면 왜 안 그려지는지 알 수 없다.
+        // 판은 가라앉아도 이 줄은 안 흐리게 둔다. 읽으라고 둔 글자다
         if (strokes.isEmpty() && current.isEmpty()) {
             Text(
-                "손가락으로 서명해 주세요",
+                if (enabled) "손가락으로 서명해 주세요" else "위 동의란에 체크해 주세요",
                 style = TeamFisType.bodySm,
-                color = if (enabled) {
-                    TeamFisColor.TextMuted
-                } else {
-                    TeamFisColor.TextMuted.copy(alpha = LockedAlpha)
-                },
+                color = TeamFisColor.TextMuted,
             )
         }
 
