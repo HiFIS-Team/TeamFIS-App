@@ -16,8 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.teamfis.app.R
+import com.teamfis.app.ui.components.MyMenuDivider
+import com.teamfis.app.ui.components.MyMenuRow
 import com.teamfis.app.ui.components.MySectionHeader
-import com.teamfis.app.ui.components.MySettingRow
 import com.teamfis.app.ui.components.MyStatCard
 import com.teamfis.app.ui.components.MyStatDivider
 import com.teamfis.app.ui.components.MyStatRow
@@ -34,6 +36,9 @@ import com.teamfis.app.ui.theme.TeamFisSpacing
  *
  * **트레이너 자신에 대한 자리다.** 나머지 네 탭이 전부 회원과 수업이라 `나` 를
  * 볼 데가 없었다.
+ *
+ * 짜임은 대표가 준 마이페이지를 따랐다 (2026-09-09) — **큰 인사말 위에 지점 한 줄,
+ * 아래는 아이콘 달린 메뉴 줄**이고 갈래가 바뀌는 자리에만 선을 긋는다.
  *
  * 순서는 **나 → 번 것 → 한 것 → 설정**이다. 이번 달 실적이 위에 오는 것은
  * 트레이너가 이 화면을 여는 이유가 대개 그 숫자여서다.
@@ -66,15 +71,10 @@ fun MyScreen(onBack: () -> Unit) {
         ) {
             TrainerHeader(profile, modifier = Modifier.padding(top = TeamFisSpacing.sm))
 
-            Box(
-                Modifier
-                    .padding(vertical = TeamFisSpacing.xl)
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(TeamFisColor.Divider),
+            MySectionHeader(
+                "이번 달",
+                modifier = Modifier.padding(top = TeamFisSpacing.xxxl),
             )
-
-            MySectionHeader("이번 달")
             MyStatCard {
                 MyStatRow("신규", "${profile.newMembers}건")
                 MyStatRow("재등록", "${profile.renewals}건")
@@ -90,11 +90,14 @@ fun MyScreen(onBack: () -> Unit) {
                 MyStatRow("노쇼", "${profile.noShowRounds}회차")
             }
 
-            MySectionHeader("설정", modifier = Modifier.padding(top = TeamFisSpacing.xxxl))
-            Column(verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.sm)) {
-                // TODO: 알림 설정 · 로그아웃이 붙으면 연결한다
-                MySettingRow("알림", onClick = {})
-                MySettingRow("로그아웃", onClick = {}, danger = true)
+            Column(Modifier.padding(top = TeamFisSpacing.xxl)) {
+                // TODO: 설정 화면들이 붙으면 연결한다
+                MyMenuRow(R.drawable.ic_header_notification, "알림 설정", onClick = {})
+                MyMenuRow(R.drawable.ic_setting, "앱 설정", onClick = {})
+
+                MyMenuDivider()
+
+                MyMenuRow(R.drawable.ic_logout, "로그아웃", onClick = {}, danger = true)
             }
 
             MyVersionNote(

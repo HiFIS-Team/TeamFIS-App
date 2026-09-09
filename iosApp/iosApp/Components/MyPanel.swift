@@ -22,21 +22,22 @@ struct TrainerProfile {
     let noShowRounds: Int
 }
 
-/// 마이의 머리 — 이름 · 지점 · 연락처.
+/// 마이의 머리 — 지점 한 줄과 **큰 인사말**.
 ///
-/// 회원 상세가 `000 (남)` 으로 여는 것과 같은 모양이다. 다만 여기는 **나**라서
-/// 전화 아이콘을 안 단다 — 나한테 걸 일은 없다.
+/// 대표가 준 마이페이지 짜임을 따랐다 (2026-09-09). 이 화면은 목록이 짧아서
+/// 위가 비면 화면이 허전한데, **인사말이 그 자리를 채운다.** 회원 상세처럼
+/// 정보를 늘어놓지 않는 것은 여기가 남이 아니라 **나**라서다 — 내 번호를 내가 볼 일은 없다.
 struct TrainerHeader: View {
     let profile: TrainerProfile
 
     var body: some View {
-        VStack(alignment: .leading, spacing: TeamFisSpacing.xs) {
-            Text("\(profile.name) 트레이너")
+        VStack(alignment: .leading, spacing: TeamFisSpacing.md) {
+            Text(profile.branch)
+                .font(TeamFisFont.bodySm)
+                .foregroundStyle(TeamFisColor.textTertiary)
+            Text("안녕하세요\n\(profile.name) 트레이너님!")
                 .font(TeamFisFont.titleLg)
                 .foregroundStyle(TeamFisColor.textPrimary)
-            Text("\(profile.branch) · \(profile.phone)")
-                .font(TeamFisFont.bodySm.monospacedDigit())
-                .foregroundStyle(TeamFisColor.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -109,36 +110,62 @@ struct MyStatDivider: View {
     }
 }
 
-/// 설정 한 줄 — 글자 하나와 화살표.
+/// 메뉴 한 줄 — 아이콘 · 글자 · (값) · 화살표.
+///
+/// **판을 안 깐다** (2026-09-09 대표가 준 짜임). 메뉴는 줄로 서고 갈래가 바뀌는
+/// 자리에만 선을 긋는다. 줄마다 카드를 깔면 셋만 있어도 화면이 무거워진다.
 ///
 /// 로그아웃처럼 **되돌리기 어려운 것은 브랜드 색**으로 적어 눈에 걸리게 한다.
-struct MySettingRow: View {
+struct MyMenuRow: View {
+    let icon: String
     let label: String
+    /// 오른쪽 화살표 앞에 붙는 값 — 없으면 안 그린다
+    var value: String?
     var danger = false
     let action: () -> Void
+
+    private var tint: Color { danger ? TeamFisColor.brand : TeamFisColor.textPrimary }
 
     var body: some View {
         Button(action: action) {
             HStack(spacing: TeamFisSpacing.md) {
+                Image(icon)
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(tint)
                 Text(label)
-                    .font(TeamFisFont.bodySm)
-                    .foregroundStyle(danger ? TeamFisColor.brand : TeamFisColor.textPrimary)
+                    .font(TeamFisFont.body)
+                    .foregroundStyle(tint)
+
                 Spacer(minLength: 0)
+
+                if let value {
+                    Text(value)
+                        .font(TeamFisFont.bodySm.monospacedDigit())
+                        .foregroundStyle(TeamFisColor.textTertiary)
+                }
                 Image("ic_chevron_right")
                     .renderingMode(.template)
                     .resizable()
                     .frame(width: 18, height: 18)
                     .foregroundStyle(danger ? TeamFisColor.brand : TeamFisColor.textTertiary)
             }
-            .padding(TeamFisSpacing.lg)
+            .padding(.vertical, TeamFisSpacing.lg)
             .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
-                    .fill(TeamFisColor.surface1)
-            )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// 메뉴 갈래를 가르는 선 — 줄과 줄 사이가 아니라 **묶음과 묶음 사이**에만 긋는다.
+struct MyMenuDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(TeamFisColor.divider)
+            .frame(height: 1)
+            .padding(.vertical, TeamFisSpacing.sm)
     }
 }
 

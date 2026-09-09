@@ -1,5 +1,6 @@
 package com.teamfis.app.ui.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
@@ -51,24 +51,25 @@ data class TrainerProfile(
 )
 
 /**
- * 마이의 머리 — 이름 · 지점 · 연락처.
+ * 마이의 머리 — 지점 한 줄과 **큰 인사말**.
  *
- * 회원 상세가 `000 (남)` 으로 여는 것과 같은 모양이다. 다만 여기는 **나**라서
- * 전화 아이콘을 안 단다 — 나한테 걸 일은 없다.
+ * 대표가 준 마이페이지 짜임을 따랐다 (2026-09-09). 이 화면은 목록이 짧아서
+ * 위가 비면 화면이 허전한데, **인사말이 그 자리를 채운다.** 회원 상세처럼
+ * 정보를 늘어놓지 않는 것은 여기가 남이 아니라 **나**라서다 — 내 번호를 내가 볼 일은 없다.
  */
 @Composable
 fun TrainerHeader(profile: TrainerProfile, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth()) {
         Text(
-            "${profile.name} 트레이너",
-            style = TeamFisType.titleLg,
-            color = TeamFisColor.TextPrimary,
+            profile.branch,
+            style = TeamFisType.bodySm,
+            color = TeamFisColor.TextTertiary,
         )
         Text(
-            "${profile.branch} · ${profile.phone}",
-            style = TeamFisType.bodySm.copy(fontFeatureSettings = "tnum"),
-            color = TeamFisColor.TextSecondary,
-            modifier = Modifier.padding(top = TeamFisSpacing.xs),
+            "안녕하세요\n${profile.name} 트레이너님!",
+            style = TeamFisType.titleLg,
+            color = TeamFisColor.TextPrimary,
+            modifier = Modifier.padding(top = TeamFisSpacing.md),
         )
     }
 }
@@ -144,40 +145,74 @@ fun MyStatDivider() {
 }
 
 /**
- * 설정 한 줄 — 글자 하나와 화살표.
+ * 메뉴 한 줄 — 아이콘 · 글자 · (값) · 화살표.
+ *
+ * **판을 안 깐다** (2026-09-09 대표가 준 짜임). 메뉴는 줄로 서고 갈래가 바뀌는
+ * 자리에만 선을 긋는다. 줄마다 카드를 깔면 셋만 있어도 화면이 무거워진다.
  *
  * 로그아웃처럼 **되돌리기 어려운 것은 브랜드 색**으로 적어 눈에 걸리게 한다.
  */
 @Composable
-fun MySettingRow(
+fun MyMenuRow(
+    @DrawableRes icon: Int,
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    /** 오른쪽 화살표 앞에 붙는 값 — 없으면 안 그린다 */
+    value: String? = null,
     danger: Boolean = false,
 ) {
     val interaction = remember { MutableInteractionSource() }
+    val tint = if (danger) TeamFisColor.Brand else TeamFisColor.TextPrimary
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(TeamFisRadius.card)
-            .background(TeamFisColor.Surface1)
             .clickable(interactionSource = interaction, indication = null, onClick = onClick)
-            .padding(horizontal = TeamFisSpacing.lg, vertical = TeamFisSpacing.lg),
+            .padding(vertical = TeamFisSpacing.lg),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null, // 옆 글자가 이름 역할을 한다
+            tint = tint,
+            modifier = Modifier.size(20.dp),
+        )
         Text(
             label,
-            style = TeamFisType.bodySm,
-            color = if (danger) TeamFisColor.Brand else TeamFisColor.TextPrimary,
+            style = TeamFisType.body,
+            color = tint,
+            modifier = Modifier.padding(start = TeamFisSpacing.md),
         )
+
         Spacer(Modifier.weight(1f))
+
+        if (value != null) {
+            Text(
+                value,
+                style = TeamFisType.bodySm.copy(fontFeatureSettings = "tnum"),
+                color = TeamFisColor.TextTertiary,
+                modifier = Modifier.padding(end = TeamFisSpacing.sm),
+            )
+        }
         Icon(
             painter = painterResource(R.drawable.ic_chevron_right),
-            contentDescription = null, // 왼쪽 글자가 이름 역할을 한다
+            contentDescription = null,
             tint = if (danger) TeamFisColor.Brand else TeamFisColor.TextTertiary,
             modifier = Modifier.size(18.dp),
         )
     }
+}
+
+/** 메뉴 갈래를 가르는 선 — 줄과 줄 사이가 아니라 **묶음과 묶음 사이**에만 긋는다. */
+@Composable
+fun MyMenuDivider(modifier: Modifier = Modifier) {
+    Spacer(
+        modifier
+            .padding(vertical = TeamFisSpacing.sm)
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(TeamFisColor.Divider),
+    )
 }
 
 /** 화면 맨 아래 한 줄 — 버전. 눌러도 아무 일 없다. */
