@@ -65,14 +65,17 @@ struct SignaturePad: View {
 
     var body: some View {
         ZStack {
+            // 판 전체에 `.opacity` 를 씌우지 않고 **색의 투명도**로 낮춘다 —
+            // 안드로이드에서 레이어를 세웠다가 켰을 때 판이 되레 사라졌다
+            // (2026-09-09 대표 확인). 두 플랫폼이 같은 방법을 쓴다
             RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
-                .fill(TeamFisColor.surface1)
+                .fill(TeamFisColor.surface1.opacity(enabled ? 1 : lockedAlpha))
 
             // 빈 판은 그릴 수 있는 자리로 안 보인다. 한 줄만 두고 첫 획에 사라진다
             if strokes.isEmpty, current.isEmpty {
                 Text("손가락으로 서명해 주세요")
                     .font(TeamFisFont.bodySm)
-                    .foregroundStyle(TeamFisColor.textMuted)
+                    .foregroundStyle(TeamFisColor.textMuted.opacity(enabled ? 1 : lockedAlpha))
             }
 
             Canvas { context, _ in
@@ -86,7 +89,6 @@ struct SignaturePad: View {
                 }
             }
         }
-        .opacity(enabled ? 1 : lockedAlpha)
         .contentShape(Rectangle())
         .gesture(
             // 점 하나짜리 톡도 받아야 하므로 `minimumDistance` 는 0 이다

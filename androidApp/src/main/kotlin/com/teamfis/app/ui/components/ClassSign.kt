@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
@@ -117,22 +116,28 @@ fun SignaturePad(
     Box(
         modifier
             .clip(TeamFisRadius.card)
-            .background(TeamFisColor.Surface1)
-            .alpha(if (enabled) 1f else LockedAlpha)
-            .then(
-                if (!enabled) Modifier else Modifier.pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = onStrokeStart,
-                        onDrag = { change, _ ->
-                            onStrokeMove(change.position)
-                            // 안 먹으면 뒤의 스크롤이 같이 움직인다
-                            change.consume()
-                        },
-                        onDragEnd = onStrokeEnd,
-                        onDragCancel = onStrokeEnd,
-                    )
-                },
-            ),
+            // ⚠️ `Modifier.alpha` 를 쓰면 안 된다. 그건 그래픽 레이어를 세우는데,
+            // 그 앞에 선 `background` 와 엉켜 **켰을 때 판이 되레 사라졌다**
+            // (2026-09-09 대표 확인). 색 자체의 투명도로 낮춘다
+            .background(
+                if (enabled) TeamFisColor.Surface1
+                else TeamFisColor.Surface1.copy(alpha = LockedAlpha),
+            )
+            // 손이 안 먹는 것도 `enabled` 를 열쇠로 다시 잡는다 — 모디파이어 사슬이
+            // 상태마다 달라지면 위와 같은 일이 또 난다
+            .pointerInput(enabled) {
+                if (!enabled) return@pointerInput
+                detectDragGestures(
+                    onDragStart = onStrokeStart,
+                    onDrag = { change, _ ->
+                        onStrokeMove(change.position)
+                        // 안 먹으면 뒤의 스크롤이 같이 움직인다
+                        change.consume()
+                    },
+                    onDragEnd = onStrokeEnd,
+                    onDragCancel = onStrokeEnd,
+                )
+            },
         contentAlignment = Alignment.Center,
     ) {
         // 빈 판은 그릴 수 있는 자리로 안 보인다. 한 줄만 두고 첫 획에 사라진다
@@ -140,7 +145,11 @@ fun SignaturePad(
             Text(
                 "손가락으로 서명해 주세요",
                 style = TeamFisType.bodySm,
-                color = TeamFisColor.TextMuted,
+                color = if (enabled) {
+                    TeamFisColor.TextMuted
+                } else {
+                    TeamFisColor.TextMuted.copy(alpha = LockedAlpha)
+                },
             )
         }
 
