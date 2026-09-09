@@ -47,11 +47,14 @@ extension Int {
 }
 
 /// 회차 한 건.
+/// 회차 한 건.
+///
+/// **시각을 글자가 아니라 값으로 든다** — 회차를 누르면 그 회차의 일지로 가는데,
+/// 일지 화면이 날짜를 값으로 받아야 해서다 (`ScheduleClass` 와 같은 이유).
 struct MemberSession: Identifiable {
     let id = UUID()
     let round: Int
-    /// `2026.03.21 (토) 10:00`
-    let at: String
+    let at: Date
     let status: SessionStatus
     /// 수업이 끝난 회차만 채워진다
     var parts: [BodyPart] = []
@@ -59,6 +62,17 @@ struct MemberSession: Identifiable {
     ///
     /// **일지를 썼어도 사인 전이면 아직 안 닫힌 회차다.** 목록에서는 그때까지 펴지 않는다.
     var signed: Bool = false
+
+    /// `2026.03.21 (토) 10:00` — 카드에 서는 글자
+    var atLabel: String {
+        let calendar = TeamFisCalendar.calendar
+        let parts = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: at)
+        return String(
+            format: "%04d.%02d.%02d (%@) %02d:%02d",
+            parts.year ?? 0, parts.month ?? 0, parts.day ?? 0,
+            TeamFisCalendar.weekdayLabel(at), parts.hour ?? 0, parts.minute ?? 0
+        )
+    }
 }
 
 /// 회차 상태.
@@ -240,8 +254,11 @@ struct ProductSelector: View {
 /// 끝났으면 그날 한 운동 부위. 같은 자리에 다른 것이 오므로 카드 높이도 달라진다.
 struct SessionCard: View {
     let session: MemberSession
+    /// 누르면 그 회차의 일지로 간다 (HiFIS 와 같은 길)
+    var onSelect: () -> Void = {}
 
     var body: some View {
+        Button(action: onSelect) {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: TeamFisSpacing.md) {
                 Text("\(session.round)회차")
@@ -252,7 +269,7 @@ struct SessionCard: View {
             }
 
             HStack(spacing: TeamFisSpacing.sm) {
-                Text(session.at)
+                Text(session.atLabel)
                     .font(TeamFisFont.bodySm.monospacedDigit())
                     .foregroundStyle(TeamFisColor.textSecondary)
                 if session.status == .scheduled {
@@ -279,6 +296,9 @@ struct SessionCard: View {
             RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
                 .fill(TeamFisColor.surface1)
         )
+        .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -406,4 +426,58 @@ struct FlowLayout: Layout {
         if !current.isEmpty { rows.append((current, height)) }
         return rows
     }
+}
+
+/// 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 상세를 주면 통째로 걷어낸다.
+/// 목록에서 누른 회원의 이름만 이어 받는다.
+/// 회원 상세와 일지 화면이 **같은 회원을 그리므로** 여기 한 벌만 둔다.
+func placeholderMemberDetail(for member: Member) -> MemberDetail {
+    func at(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int) -> Date {
+        TeamFisCalendar.calendar.date(
+            from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute)
+        ) ?? Date()
+    }
+
+    return MemberDetail(
+        name: member.name,
+        gender: "남",
+        phone: "010-1234-4564",
+        birth: "1999. 12. 12.",
+        visitPath: .referral,
+        referrer: "000",
+        products: [
+            MemberProduct(
+                name: "얼리버드 20회",
+                rounds: 20,
+                payment: 1_500_000,
+                registeredAt: "2026. 3. 10.",
+                sessions: [
+                    MemberSession(round: 3, at: at(2026, 3, 21, 10, 0), status: .scheduled),
+                    MemberSession(
+                        round: 2, at: at(2026, 3, 18, 19, 30), status: .done,
+                        parts: [.chest, .leg, .back, .arm, .shoulder, .cardio],
+                        signed: true
+                    ),
+                    // 일지는 썼는데 사인을 아직 못 받은 회차 — 그냥 카드로 선다
+                    MemberSession(
+                        round: 1, at: at(2026, 3, 14, 10, 0), status: .done,
+                        parts: [.back, .arm]
+                    ),
+                ]
+            ),
+            MemberProduct(
+                name: "PT 30회",
+                rounds: 30,
+                payment: 2_100_000,
+                registeredAt: "2025. 11. 2.",
+                sessions: [
+                    MemberSession(
+                        round: 30, at: at(2026, 2, 27, 20, 0), status: .done,
+                        parts: [.leg, .cardio], signed: true
+                    ),
+                    MemberSession(round: 29, at: at(2026, 2, 24, 20, 0), status: .noShow),
+                ]
+            ),
+        ]
+    )
 }

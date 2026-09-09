@@ -120,6 +120,12 @@ struct AppRoot: View {
             switch route {
             case .memberDetail(let member):
                 MemberDetailScreen(member: member, onBack: back)
+            case .classMember(let member):
+                ClassMemberScreen(
+                    member: member,
+                    onBack: back,
+                    onLog: { open(.classLog($0)) }
+                )
             case .scheduleDetail(let item):
                 ScheduleDetailScreen(item: item, onBack: back)
             case .classLog(let todo):

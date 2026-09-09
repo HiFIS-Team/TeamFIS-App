@@ -17,15 +17,7 @@ struct MemberDetailScreen: View {
     @State private var productIndex = 0
     @State private var productExpanded = false
 
-    // 운동을 하는 이유 · 영양제 — 사람에 붙는 값이라 회차가 아니라 여기 산다.
-    // TODO(서버): 회원 상세 API 가 붙으면 받아 오고 고칠 때마다 보낸다
-    @State private var goals: [String] = [""]
-    @State private var supplements: [Supplement] = []
-    @State private var pickingSupplement = false
-    /// 고치는 중인 영양제. 새로 담는 중이면 자리가 `-1` 이다
-    @State private var editingSupplement: EditingSupplement?
-
-    private var detail: MemberDetail { Self.placeholderDetail(for: member) }
+    private var detail: MemberDetail { placeholderMemberDetail(for: member) }
 
     var body: some View {
         // 홈·회원 목록과 같은 `VStack { 고정; ScrollView }` 모양을 지킨다
@@ -82,113 +74,9 @@ struct MemberDetailScreen: View {
                     }
                     .padding(.top, TeamFisSpacing.xl)
                     .padding(.horizontal, TeamFisSpacing.screenHorizontal)
-
-                    // 회차 밑에 **사람에 붙는 값** 둘이 온다 (HiFIS 와 같은 자리).
-                    // 등록권·회차는 등록권마다 갈리지만 이 둘은 회원 하나에 하나다
-                    VStack(alignment: .leading, spacing: 0) {
-                        MemberSectionHeader("운동을 하는 이유")
-                        MemberGoalList(goals: $goals)
-
-                        MemberSectionHeader("영양제")
-                            .padding(.top, TeamFisSpacing.xxxl)
-                        SupplementList(
-                            supplements: supplements,
-                            onEdit: { editingSupplement = EditingSupplement(index: $0, row: supplements[$0]) },
-                            onAdd: { pickingSupplement = true }
-                        )
-                    }
-                    .padding(.top, TeamFisSpacing.xxxl)
-                    .padding(.horizontal, TeamFisSpacing.screenHorizontal)
                 }
                 .padding(.bottom, TeamFisSpacing.xxxl)
             }
         }
-        .sheet(isPresented: $pickingSupplement) {
-            SupplementPickerSheet(
-                onPick: {
-                    supplements.append($0)
-                    pickingSupplement = false
-                },
-                onWriteMyself: {
-                    pickingSupplement = false
-                    editingSupplement = EditingSupplement(index: -1, row: Supplement(name: ""))
-                },
-                onDismiss: { pickingSupplement = false }
-            )
-        }
-        .sheet(item: $editingSupplement) { editing in
-            SupplementEditSheet(
-                row: editing.row,
-                editing: editing.index >= 0,
-                onSave: { saved in
-                    if editing.index >= 0 {
-                        supplements[editing.index] = saved
-                    } else {
-                        supplements.append(saved)
-                    }
-                    editingSupplement = nil
-                },
-                onDelete: {
-                    if editing.index >= 0 { supplements.remove(at: editing.index) }
-                    editingSupplement = nil
-                },
-                onDismiss: { editingSupplement = nil }
-            )
-        }
     }
-
-    /// 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 상세를 주면 통째로 걷어낸다.
-    /// 목록에서 누른 회원의 이름만 이어 받는다.
-    private static func placeholderDetail(for member: Member) -> MemberDetail {
-        MemberDetail(
-            name: member.name,
-            gender: "남",
-            phone: "010-1234-4564",
-            birth: "1999. 12. 12.",
-            visitPath: .referral,
-            referrer: "000",
-            products: [
-                MemberProduct(
-                    name: "얼리버드 20회",
-                    rounds: 20,
-                    payment: 1_500_000,
-                    registeredAt: "2026. 3. 10.",
-                    sessions: [
-                        MemberSession(round: 3, at: "2026.03.21 (토) 10:00", status: .scheduled),
-                        MemberSession(
-                            round: 2, at: "2026.03.18 (수) 19:30", status: .done,
-                            parts: [.chest, .leg, .back, .arm, .shoulder, .cardio],
-                            signed: true
-                        ),
-                        // 일지는 썼는데 사인을 아직 못 받은 회차 — 그냥 카드로 선다
-                        MemberSession(
-                            round: 1, at: "2026.03.14 (토) 10:00", status: .done,
-                            parts: [.back, .arm]
-                        ),
-                    ]
-                ),
-                MemberProduct(
-                    name: "PT 30회",
-                    rounds: 30,
-                    payment: 2_100_000,
-                    registeredAt: "2025. 11. 2.",
-                    sessions: [
-                        MemberSession(
-                            round: 30, at: "2026.02.27 (금) 20:00", status: .done,
-                            parts: [.leg, .cardio], signed: true
-                        ),
-                        MemberSession(round: 29, at: "2026.02.24 (화) 20:00", status: .noShow),
-                    ]
-                ),
-            ]
-        )
-    }
-}
-
-/// `.sheet(item:)` 은 `Identifiable` 을 받는다 — 고치는 자리와 값을 함께 넘긴다
-private struct EditingSupplement: Identifiable {
-    /// 새로 담는 중이면 `-1`
-    let index: Int
-    let row: Supplement
-    var id: String { "\(index)-\(row.id)" }
 }

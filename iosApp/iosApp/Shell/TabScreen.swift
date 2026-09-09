@@ -21,7 +21,7 @@ struct TabScreen: View {
                 )
             case .lesson:
                 ClassScreen(
-                    onLog: { open(.classLog($0)) },
+                    onMember: { open(.classMember($0)) },
                     onSign: { open(.classSign($0)) },
                     onNotification: { open(.notifications) }
                 )

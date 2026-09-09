@@ -9,7 +9,9 @@ enum Route: Hashable {
     case memberDetail(Member)
     /// 수업 상세 — 일정의 수업 카드를 누르면 들어온다
     case scheduleDetail(ScheduleClass)
-    /// 일지 작성 — 수업 탭의 일지 목록에서 한 건을 누르면 들어온다
+    /// 회원 일지 — 수업 탭의 일지 목록에서 회원 하나를 누르면 들어온다
+    case classMember(Member)
+    /// 일지 작성 — 회원 일지에서 회차 하나를 누르면 들어온다
     case classLog(ClassTodo)
     /// 세션 사인 — 수업 탭의 사인 목록에서 한 건을 누르면 들어온다
     case classSign(ClassTodo)

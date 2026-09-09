@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,26 +21,15 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.teamfis.app.R
-import com.teamfis.app.ui.components.AddInlineButton
-import com.teamfis.app.ui.components.BodyPart
 import com.teamfis.app.ui.components.DetailInfoRow
-import com.teamfis.app.ui.components.MemberGoalList
-import com.teamfis.app.ui.components.MemberSectionHeader
-import com.teamfis.app.ui.components.Supplement
-import com.teamfis.app.ui.components.SupplementEditDialog
-import com.teamfis.app.ui.components.SupplementList
-import com.teamfis.app.ui.components.SupplementPickerDialog
 import com.teamfis.app.ui.components.comma
 import com.teamfis.app.ui.components.Member
-import com.teamfis.app.ui.components.MemberDetail
-import com.teamfis.app.ui.components.MemberProduct
+import com.teamfis.app.ui.components.placeholderMemberDetail
 import com.teamfis.app.ui.components.MemberProfile
-import com.teamfis.app.ui.components.MemberSession
 import com.teamfis.app.ui.components.ProductSelector
 import com.teamfis.app.ui.shell.DetailHeader
 import com.teamfis.app.ui.components.SessionCard
 import com.teamfis.app.ui.components.SessionStatus
-import com.teamfis.app.ui.components.VisitPath
 import com.teamfis.app.ui.theme.TeamFisColor
 import com.teamfis.app.ui.theme.TeamFisSpacing
 
@@ -60,17 +47,9 @@ import com.teamfis.app.ui.theme.TeamFisSpacing
  */
 @Composable
 fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
-    val detail = remember(member) { placeholderDetail(member) }
+    val detail = remember(member) { placeholderMemberDetail(member) }
     var productIndex by remember { mutableIntStateOf(0) }
     var productExpanded by remember { mutableStateOf(false) }
-
-    // 운동을 하는 이유 · 영양제 — 사람에 붙는 값이라 회차가 아니라 여기 산다.
-    // TODO(서버): 회원 상세 API 가 붙으면 받아 오고 고칠 때마다 보낸다
-    val goals = remember(member) { mutableStateListOf("") }
-    val supplements = remember(member) { mutableStateListOf<Supplement>() }
-    var pickingSupplement by remember { mutableStateOf(false) }
-    // 고치는 중인 영양제. 새로 담는 중이면 -1 이 아니라 `editing` 이 가른다
-    var editingSupplement by remember { mutableStateOf<Pair<Int, Supplement>?>(null) }
 
     Column(
         Modifier
@@ -139,125 +118,12 @@ fun MemberDetailScreen(member: Member, onBack: () -> Unit) {
                     top = TeamFisSpacing.xl,
                     start = TeamFisSpacing.screenHorizontal,
                     end = TeamFisSpacing.screenHorizontal,
+                    bottom = TeamFisSpacing.xxxl,
                 ),
                 verticalArrangement = Arrangement.spacedBy(TeamFisSpacing.md),
             ) {
                 product.sessions.forEach { session -> SessionCard(session) }
             }
-
-            // 회차 밑에 **사람에 붙는 값** 둘이 온다 (HiFIS 와 같은 자리).
-            // 등록권·회차는 등록권마다 갈리지만 이 둘은 회원 하나에 하나다
-            Column(
-                modifier = Modifier.padding(
-                    top = TeamFisSpacing.xxxl,
-                    start = TeamFisSpacing.screenHorizontal,
-                    end = TeamFisSpacing.screenHorizontal,
-                    bottom = TeamFisSpacing.xxxl,
-                ),
-            ) {
-                MemberSectionHeader("운동을 하는 이유")
-                MemberGoalList(
-                    goals = goals,
-                    onChange = { index, text -> goals[index] = text },
-                    onAdd = { goals.add("") },
-                    onRemove = {
-                        // 마지막 한 줄은 비우기만 한다 — 판이 통째로 사라지면
-                        // 다시 어디를 눌러야 할지 알 수 없다 (일지 표와 같은 규칙)
-                        if (goals.size > 1) goals.removeAt(it) else goals[0] = ""
-                    },
-                )
-
-                MemberSectionHeader(
-                    "영양제",
-                    modifier = Modifier.padding(top = TeamFisSpacing.xxxl),
-                )
-                SupplementList(
-                    supplements = supplements,
-                    onEdit = { editingSupplement = it to supplements[it] },
-                    onAdd = { pickingSupplement = true },
-                )
-            }
         }
     }
-
-    if (pickingSupplement) {
-        SupplementPickerDialog(
-            onPick = {
-                supplements.add(it)
-                pickingSupplement = false
-            },
-            onWriteMyself = {
-                pickingSupplement = false
-                editingSupplement = -1 to Supplement(name = "")
-            },
-            onDismiss = { pickingSupplement = false },
-        )
-    }
-
-    editingSupplement?.let { (index, row) ->
-        SupplementEditDialog(
-            initial = row,
-            editing = index >= 0,
-            onSave = {
-                if (index >= 0) supplements[index] = it else supplements.add(it)
-                editingSupplement = null
-            },
-            onDelete = {
-                if (index >= 0) supplements.removeAt(index)
-                editingSupplement = null
-            },
-            onDismiss = { editingSupplement = null },
-        )
-    }
 }
-
-/**
- * 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 상세를 주면 통째로 걷어낸다.
- * 목록에서 누른 회원의 이름만 이어 받는다.
- */
-private fun placeholderDetail(member: Member) = MemberDetail(
-    name = member.name,
-    gender = "남",
-    phone = "010-1234-4564",
-    birth = "1999. 12. 12.",
-    visitPath = VisitPath.Referral,
-    referrer = "000",
-    products = listOf(
-        MemberProduct(
-            name = "얼리버드 20회",
-            rounds = 20,
-            payment = 1_500_000,
-            registeredAt = "2026. 3. 10.",
-            sessions = listOf(
-                MemberSession(3, "2026.03.21 (토) 10:00", SessionStatus.Scheduled),
-                MemberSession(
-                    2, "2026.03.18 (수) 19:30", SessionStatus.Done,
-                    parts = listOf(
-                        BodyPart.Chest, BodyPart.Leg, BodyPart.Back,
-                        BodyPart.Arm, BodyPart.Shoulder, BodyPart.Cardio,
-                    ),
-                    signed = true,
-                ),
-                // 일지는 썼는데 사인을 아직 못 받은 회차 — 그냥 카드로 선다
-                MemberSession(
-                    1, "2026.03.14 (토) 10:00", SessionStatus.Done,
-                    parts = listOf(BodyPart.Back, BodyPart.Arm),
-                ),
-            ),
-        ),
-        MemberProduct(
-            name = "PT 30회",
-            rounds = 30,
-            payment = 2_100_000,
-            registeredAt = "2025. 11. 2.",
-            sessions = listOf(
-                MemberSession(
-                    30, "2026.02.27 (금) 20:00", SessionStatus.Done,
-                    parts = listOf(BodyPart.Leg, BodyPart.Cardio),
-                    signed = true,
-                ),
-                MemberSession(29, "2026.02.24 (화) 20:00", SessionStatus.NoShow),
-            ),
-        ),
-    ),
-)

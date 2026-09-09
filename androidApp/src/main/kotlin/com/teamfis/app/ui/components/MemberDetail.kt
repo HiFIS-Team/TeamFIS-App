@@ -35,6 +35,7 @@ import com.teamfis.app.ui.theme.TeamFisMotion
 import com.teamfis.app.ui.theme.TeamFisRadius
 import com.teamfis.app.ui.theme.TeamFisSpacing
 import com.teamfis.app.ui.theme.TeamFisType
+import java.time.LocalDateTime
 
 /** 회원 상세 — 목록에서 한 명을 눌렀을 때 펼쳐지는 것. */
 data class MemberDetail(
@@ -76,11 +77,15 @@ data class MemberProduct(
 fun comma(value: Int): String =
     value.toString().reversed().chunked(3).joinToString(",").reversed()
 
-/** 회차 한 건. */
+/**
+ * 회차 한 건.
+ *
+ * **시각을 글자가 아니라 값으로 든다** — 회차를 누르면 그 회차의 일지로 가는데,
+ * 일지 화면이 날짜를 값으로 받아야 해서다 (`ScheduleClass` 와 같은 이유).
+ */
 data class MemberSession(
     val round: Int,
-    /** `2026.03.21 (토) 10:00` */
-    val at: String,
+    val at: LocalDateTime,
     val status: SessionStatus,
     /** 수업이 끝난 회차만 채워진다 */
     val parts: List<BodyPart> = emptyList(),
@@ -90,7 +95,14 @@ data class MemberSession(
      * **일지를 썼어도 사인 전이면 아직 안 닫힌 회차다.** 목록에서는 그때까지 펴지 않는다.
      */
     val signed: Boolean = false,
-)
+) {
+    /** `2026.03.21 (토) 10:00` — 카드에 서는 글자 */
+    val atLabel: String
+        get() = "%04d.%02d.%02d (%s) %02d:%02d".format(
+            at.year, at.monthValue, at.dayOfMonth,
+            at.dayOfWeek.koLabel, at.hour, at.minute,
+        )
+}
 
 /** 회차 상태. */
 enum class SessionStatus(val label: String) {
@@ -283,11 +295,19 @@ fun ProductSelector(
  * 끝났으면 그날 한 운동 부위. 같은 자리에 다른 것이 오므로 카드 높이도 달라진다.
  */
 @Composable
-fun SessionCard(session: MemberSession, modifier: Modifier = Modifier) {
+fun SessionCard(
+    session: MemberSession,
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    val interaction = remember { MutableInteractionSource() }
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(TeamFisColor.Surface1, TeamFisRadius.card)
+            .clip(TeamFisRadius.card)
+            .background(TeamFisColor.Surface1)
+            // 누르면 그 회차의 일지로 간다 (HiFIS 와 같은 길)
+            .clickable(interactionSource = interaction, indication = null, onClick = onClick)
             .padding(TeamFisSpacing.lg),
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -306,7 +326,7 @@ fun SessionCard(session: MemberSession, modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(TeamFisSpacing.sm),
         ) {
             Text(
-                session.at,
+                session.atLabel,
                 style = TeamFisType.bodySm.copy(fontFeatureSettings = "tnum"),
                 color = TeamFisColor.TextSecondary,
             )
@@ -413,3 +433,55 @@ private val TouchTarget = 44.dp
 private val Icon24 = 24.dp
 private val ButtonHeight = 48.dp
 private val PartIcon = 14.dp
+
+/**
+ * 데이터가 붙기 전까지 쓰는 **자리 표시자**다. 서버가 회원 상세를 주면 통째로 걷어낸다.
+ * 목록에서 누른 회원의 이름만 이어 받는다.
+ * 회원 상세와 일지 화면이 **같은 회원을 그리므로** 여기 한 벌만 둔다.
+ */
+fun placeholderMemberDetail(member: Member) = MemberDetail(
+    name = member.name,
+    gender = "남",
+    phone = "010-1234-4564",
+    birth = "1999. 12. 12.",
+    visitPath = VisitPath.Referral,
+    referrer = "000",
+    products = listOf(
+        MemberProduct(
+            name = "얼리버드 20회",
+            rounds = 20,
+            payment = 1_500_000,
+            registeredAt = "2026. 3. 10.",
+            sessions = listOf(
+                MemberSession(3, LocalDateTime.of(2026, 3, 21, 10, 0), SessionStatus.Scheduled),
+                MemberSession(
+                    2, LocalDateTime.of(2026, 3, 18, 19, 30), SessionStatus.Done,
+                    parts = listOf(
+                        BodyPart.Chest, BodyPart.Leg, BodyPart.Back,
+                        BodyPart.Arm, BodyPart.Shoulder, BodyPart.Cardio,
+                    ),
+                    signed = true,
+                ),
+                // 일지는 썼는데 사인을 아직 못 받은 회차 — 그냥 카드로 선다
+                MemberSession(
+                    1, LocalDateTime.of(2026, 3, 14, 10, 0), SessionStatus.Done,
+                    parts = listOf(BodyPart.Back, BodyPart.Arm),
+                ),
+            ),
+        ),
+        MemberProduct(
+            name = "PT 30회",
+            rounds = 30,
+            payment = 2_100_000,
+            registeredAt = "2025. 11. 2.",
+            sessions = listOf(
+                MemberSession(
+                    30, LocalDateTime.of(2026, 2, 27, 20, 0), SessionStatus.Done,
+                    parts = listOf(BodyPart.Leg, BodyPart.Cardio),
+                    signed = true,
+                ),
+                MemberSession(29, LocalDateTime.of(2026, 2, 24, 20, 0), SessionStatus.NoShow),
+            ),
+        ),
+    ),
+)

@@ -28,6 +28,7 @@ import com.teamfis.app.ui.components.ClassTodo
 import com.teamfis.app.ui.components.ScheduleClass
 import com.teamfis.app.ui.screens.ClassScreen
 import com.teamfis.app.ui.screens.ClassLogScreen
+import com.teamfis.app.ui.screens.ClassMemberScreen
 import com.teamfis.app.ui.screens.ClassSignScreen
 import com.teamfis.app.ui.screens.MemberDetailScreen
 import com.teamfis.app.ui.screens.MemberRegisterScreen
@@ -58,6 +59,8 @@ fun AppShell() {
     // 사인을 받을 수업 · 일지를 쓸 수업 — 상세와 다른 잎이라 따로 든다
     var signingClass by remember { mutableStateOf<ClassTodo?>(null) }
     var loggingClass by remember { mutableStateOf<ClassTodo?>(null) }
+    // 일지를 펴 볼 회원 — 회원 상세와 다른 잎이라 따로 든다
+    var loggingMember by remember { mutableStateOf<Member?>(null) }
     // 등록 화면이 고른 회원들 — 고르는 잎이 등록 잎 위에 또 얹히므로 셸이 들고 있는다
     var registerReferrer by remember { mutableStateOf<Member?>(null) }
     var registerRenewMember by remember { mutableStateOf<Member?>(null) }
@@ -83,9 +86,9 @@ fun AppShell() {
                     openedClass = it
                     nav.navigateOnce(Route.SCHEDULE_DETAIL)
                 },
-                onLog = {
-                    loggingClass = it
-                    nav.navigateOnce(Route.CLASS_LOG)
+                onLogMember = {
+                    loggingMember = it
+                    nav.navigateOnce(Route.CLASS_MEMBER)
                 },
                 onSign = {
                     signingClass = it
@@ -104,6 +107,19 @@ fun AppShell() {
             // 뒤로 간 직후 한 프레임 동안 null 이 될 수 있어 방어한다
             openedClass?.let {
                 ScheduleDetailScreen(item = it, onBack = { nav.popBackStack() })
+            }
+        }
+        composable(Route.CLASS_MEMBER) {
+            // 뒤로 간 직후 한 프레임 동안 null 이 될 수 있어 방어한다
+            loggingMember?.let {
+                ClassMemberScreen(
+                    member = it,
+                    onBack = { nav.popBackStack() },
+                    onLog = { todo ->
+                        loggingClass = todo
+                        nav.navigateOnce(Route.CLASS_LOG)
+                    },
+                )
             }
         }
         composable(Route.CLASS_LOG) {
@@ -176,7 +192,7 @@ fun AppShell() {
 private fun TabShell(
     onMember: (Member) -> Unit,
     onClass: (ScheduleClass) -> Unit,
-    onLog: (ClassTodo) -> Unit,
+    onLogMember: (Member) -> Unit,
     onSign: (ClassTodo) -> Unit,
     onNotification: () -> Unit,
     onAddMember: () -> Unit,
@@ -205,7 +221,7 @@ private fun TabShell(
                     onAddMember = onAddMember,
                 )
                 BottomTab.Class -> ClassScreen(
-                    onLog = onLog,
+                    onMember = onLogMember,
                     onSign = onSign,
                     onNotification = onNotification,
                 )

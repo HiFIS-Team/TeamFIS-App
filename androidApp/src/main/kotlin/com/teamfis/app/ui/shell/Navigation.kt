@@ -17,7 +17,10 @@ object Route {
     /** 수업 상세 — 일정의 수업 카드를 누르면 들어온다 */
     const val SCHEDULE_DETAIL = "schedule_detail"
 
-    /** 일지 작성 — 수업 탭의 일지 목록에서 한 건을 누르면 들어온다 */
+    /** 회원 일지 — 수업 탭의 일지 목록에서 회원 하나를 누르면 들어온다 */
+    const val CLASS_MEMBER = "class_member"
+
+    /** 일지 작성 — 회원 일지에서 회차 하나를 누르면 들어온다 */
     const val CLASS_LOG = "class_log"
 
     /** 세션 사인 — 수업 탭의 사인 목록에서 한 건을 누르면 들어온다 */
