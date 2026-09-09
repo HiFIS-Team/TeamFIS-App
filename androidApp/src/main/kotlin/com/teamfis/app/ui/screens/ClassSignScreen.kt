@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import com.teamfis.app.ui.components.BodyPartChips
 import com.teamfis.app.ui.components.ClassTodo
+import com.teamfis.app.ui.components.ConsentRow
 import com.teamfis.app.ui.components.SessionButton
 import com.teamfis.app.ui.components.SignaturePad
 import com.teamfis.app.ui.components.ampmTime
@@ -38,6 +39,10 @@ import com.teamfis.app.ui.theme.TeamFisType
  * 확인하는 건지(누구·언제·무슨 운동)만 짧게 서고 **나머지 높이는 전부 서명 칸**이다.
  * 칸이 좁으면 이름이 안 써진다.
  *
+ * **동의를 먼저 받는다** (2026-09-09 대표 지시). 서명은 개인정보고, 회원 폰이 아니라
+ * 트레이너 폰에 남는다. 체크하기 전에는 서명 칸이 안 열리고, 되돌리면 그은 것도 지운다 —
+ * 동의 없이 남은 서명이 있으면 안 된다.
+ *
  * 지우기·저장은 회차 처리 버튼과 같은 모양이다 — 화면 아래에 나란히 선다.
  *
  * **잎 화면이다** — 셸의 `NavHost` 가 오른쪽에서 밀어 넣어 하단 탭 바까지 덮는다.
@@ -47,6 +52,7 @@ fun ClassSignScreen(todo: ClassTodo, onBack: () -> Unit) {
     // 획은 여기서 든다 — 지우기·저장이 칸 밖에 있어서다
     var strokes by remember(todo) { mutableStateOf<List<List<Offset>>>(emptyList()) }
     var current by remember(todo) { mutableStateOf<List<Offset>>(emptyList()) }
+    var agreed by remember(todo) { mutableStateOf(false) }
     val signed = strokes.isNotEmpty()
 
     Column(
@@ -89,6 +95,19 @@ fun ClassSignScreen(todo: ClassTodo, onBack: () -> Unit) {
                 BodyPartChips(todo.parts, modifier = Modifier.padding(top = TeamFisSpacing.md))
             }
 
+            ConsentRow(
+                checked = agreed,
+                onCheckedChange = {
+                    agreed = it
+                    // 동의를 되돌리면 그은 것도 지운다
+                    if (!it) {
+                        strokes = emptyList()
+                        current = emptyList()
+                    }
+                },
+                modifier = Modifier.padding(top = TeamFisSpacing.lg),
+            )
+
             SignaturePad(
                 strokes = strokes,
                 current = current,
@@ -98,8 +117,9 @@ fun ClassSignScreen(todo: ClassTodo, onBack: () -> Unit) {
                     if (current.size > 1) strokes = strokes + listOf(current)
                     current = emptyList()
                 },
+                enabled = agreed,
                 modifier = Modifier
-                    .padding(top = TeamFisSpacing.lg)
+                    .padding(top = TeamFisSpacing.sm)
                     .fillMaxWidth()
                     // 남는 높이를 전부 준다 — 이름을 쓸 만큼은 돼야 한다
                     .weight(1f),

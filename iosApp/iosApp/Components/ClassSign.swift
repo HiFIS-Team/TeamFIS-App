@@ -1,5 +1,44 @@
 import SwiftUI
 
+/// 서명 앞에 받는 동의 줄.
+///
+/// **서명은 개인정보다.** 회원 폰이 아니라 트레이너 폰에 남기므로 더더욱 받아 두고
+/// 시작해야 한다 (2026-09-09 대표 지시).
+///
+/// 회원이 읽고 누르는 줄이라 **말이 회원 것**이다 — `동의합니다`.
+struct ConsentRow: View {
+    @Binding var checked: Bool
+
+    var body: some View {
+        Button { checked.toggle() } label: {
+            HStack(spacing: TeamFisSpacing.md) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: TeamFisRadius.card, style: .continuous)
+                        .fill(checked ? TeamFisColor.brand : TeamFisColor.surface2)
+                    if checked {
+                        Image("ic_check")
+                            .renderingMode(.template)
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                            .foregroundStyle(TeamFisColor.textPrimary)
+                    }
+                }
+                .frame(width: 22, height: 22)
+
+                Text("오늘 수업을 받았음을 확인하고, 서명 수집에 동의합니다")
+                    .font(TeamFisFont.bodySm)
+                    .foregroundStyle(TeamFisColor.textSecondary)
+                    .multilineTextAlignment(.leading)
+                Spacer(minLength: 0)
+            }
+            .padding(.vertical, TeamFisSpacing.sm)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .animation(TeamFisMotion.fast, value: checked)
+    }
+}
+
 /// 손으로 긋는 서명 칸.
 ///
 /// 획을 **화면이 들고 있고** 칸은 받아 그리기만 한다. 지우기·저장이 밖에 있어서다 —
@@ -8,6 +47,9 @@ import SwiftUI
 /// 한 획은 점의 나열이고, 획이 끝날 때마다 `strokes` 에 쌓인다. 그리는 중인 획만
 /// `current` 로 따로 온다 — 매번 전체를 다시 만들지 않으려는 것이다.
 ///
+/// **동의 전에는 안 열린다** (`enabled`, 2026-09-09 대표 지시). 손이 안 먹고 판이
+/// 가라앉는다 — 잠긴 것이 보여야 위의 동의 줄을 찾는다.
+///
 /// ⚠️ 뿌리(`AppRoot`)의 가장자리 뒤로가기와 겹치는 자리다. 여기 제스처가 자식이라
 /// 먼저 먹지만, **왼쪽 끝에서 시작한 획은 뒤로가기로 새어 나갈 수 있다.**
 struct SignaturePad: View {
@@ -15,8 +57,11 @@ struct SignaturePad: View {
     let current: [CGPoint]
     let onStrokeMove: (CGPoint) -> Void
     let onStrokeEnd: () -> Void
+    var enabled = true
 
     private let strokeWidth: CGFloat = 3
+    /// 잠긴 판의 흐림 — 있는 것은 보이되 만질 것이 아니라는 만큼
+    private let lockedAlpha: CGFloat = 0.4
 
     var body: some View {
         ZStack {
@@ -41,12 +86,13 @@ struct SignaturePad: View {
                 }
             }
         }
+        .opacity(enabled ? 1 : lockedAlpha)
         .contentShape(Rectangle())
         .gesture(
             // 점 하나짜리 톡도 받아야 하므로 `minimumDistance` 는 0 이다
             DragGesture(minimumDistance: 0)
-                .onChanged { onStrokeMove($0.location) }
-                .onEnded { _ in onStrokeEnd() }
+                .onChanged { if enabled { onStrokeMove($0.location) } }
+                .onEnded { _ in if enabled { onStrokeEnd() } }
         )
     }
 
