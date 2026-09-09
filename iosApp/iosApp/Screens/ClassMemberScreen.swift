@@ -26,11 +26,22 @@ struct ClassMemberScreen: View {
 
     private var detail: MemberDetail { placeholderMemberDetail(for: member) }
 
-    /// 등록권을 가로질러 최근 회차부터 — 일지는 하나의 흐름이다
+    /// **밑에서부터 1회차 · 2회차로 쌓인다** (2026-09-09 대표 지시) — 목록은 큰 번호가
+    /// 위다. 날짜로 세우면 등록권이 바뀌는 자리에서 번호가 튀어 흐름이 끊긴다.
+    /// 번호가 같으면(등록권마다 1 부터 다시 세므로) 최근 것이 위로 온다
     private var rounds: [(product: MemberProduct, session: MemberSession)] {
-        detail.products
-            .flatMap { product in product.sessions.map { (product, $0) } }
-            .sorted { $0.1.at > $1.1.at }
+        var rows: [(product: MemberProduct, session: MemberSession)] = []
+        for product in detail.products {
+            for session in product.sessions {
+                rows.append((product: product, session: session))
+            }
+        }
+        return rows.sorted { left, right in
+            let a: MemberSession = left.session
+            let b: MemberSession = right.session
+            if a.round != b.round { return a.round > b.round }
+            return a.at > b.at
+        }
     }
 
     var body: some View {

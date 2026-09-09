@@ -20,6 +20,7 @@ import com.teamfis.app.ui.components.AddRowButton
 import com.teamfis.app.ui.components.ClassTodo
 import com.teamfis.app.ui.components.Member
 import com.teamfis.app.ui.components.MemberDetail
+import com.teamfis.app.ui.components.MemberProduct
 import com.teamfis.app.ui.components.MemberGoalList
 import com.teamfis.app.ui.components.MemberSectionHeader
 import com.teamfis.app.ui.components.MemberSession
@@ -65,11 +66,16 @@ fun ClassMemberScreen(
     // 고치는 중인 영양제. 새로 담는 중이면 자리가 -1 이다
     var editingSupplement by remember { mutableStateOf<Pair<Int, Supplement>?>(null) }
 
-    // 등록권을 가로질러 최근 회차부터 — 일지는 하나의 흐름이다
+    // **밑에서부터 1회차 · 2회차로 쌓인다** (2026-09-09 대표 지시) — 목록은 큰 번호가
+    // 위다. 날짜로 세우면 등록권이 바뀌는 자리에서 번호가 튀어 흐름이 끊긴다.
+    // 번호가 같으면(등록권마다 1 부터 다시 세므로) 최근 것이 위로 온다
     val rounds = remember(detail) {
         detail.products
             .flatMap { product -> product.sessions.map { product to it } }
-            .sortedByDescending { it.second.at }
+            .sortedWith(
+                compareByDescending<Pair<MemberProduct, MemberSession>> { it.second.round }
+                    .thenByDescending { it.second.at },
+            )
     }
 
     Column(
